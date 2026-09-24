@@ -1,0 +1,5 @@
+# Core dependencies
+polite-http>=0.1.0
+
+# Testing and development dependencies
+pytest>=7.0.0

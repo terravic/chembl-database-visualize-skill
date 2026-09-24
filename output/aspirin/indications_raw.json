@@ -1,0 +1,15 @@
+{
+  "drug_indications": [
+    {
+      "efo_term": "pain",
+      "mesh_heading": "Pain",
+      "max_phase_for_ind": 4
+    },
+    {
+      "efo_term": "fever",
+      "mesh_heading": "Fever",
+      "max_phase_for_ind": 4
+    }
+  ],
+  "_license_notice": "Data from the ChEMBL Database. Please review the licensing terms at https://www.ebi.ac.uk/chembl/"
+}

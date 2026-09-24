@@ -1,0 +1,107 @@
+{
+  "molecules": [
+    {
+      "molecule_chembl_id": "CHEMBL25",
+      "pref_name": "ASPIRIN",
+      "similarity": 100.0,
+      "max_phase": 4,
+      "molecule_structures": {
+        "canonical_smiles": "CC(=O)Oc1ccccc1C(=O)O",
+        "standard_inchi_key": "BSYNRYMUTXBXSQ-UHFFFAOYSA-N"
+      },
+      "molecule_properties": {
+        "full_mwt": 180.16,
+        "alogp": 1.31,
+        "hbd": 1,
+        "hba": 3,
+        "psa": 63.6,
+        "rtb": 2,
+        "ro5_violations": 0
+      }
+    },
+    {
+      "molecule_chembl_id": "CHEMBL26",
+      "pref_name": "SALICYLIC ACID",
+      "similarity": 91.2,
+      "max_phase": 4,
+      "molecule_structures": {
+        "canonical_smiles": "O=C(O)c1ccccc1O",
+        "standard_inchi_key": "YGSDEFSMJLZEOE-UHFFFAOYSA-N"
+      },
+      "molecule_properties": {
+        "full_mwt": 138.12,
+        "alogp": 1.48,
+        "hbd": 2,
+        "hba": 2,
+        "psa": 57.53,
+        "rtb": 0,
+        "ro5_violations": 0
+      }
+    },
+    {
+      "molecule_chembl_id": "CHEMBL112",
+      "pref_name": "DIFLUNISAL",
+      "similarity": 86.4,
+      "max_phase": 4,
+      "molecule_structures": {
+        "canonical_smiles": "O=C(O)c1ccc(-c2ccc(F)cc2F)cc1O",
+        "standard_inchi_key": "HXXFSVIANLPOBG-UHFFFAOYSA-N"
+      },
+      "molecule_properties": {
+        "full_mwt": 250.2,
+        "alogp": 3.42,
+        "hbd": 2,
+        "hba": 2,
+        "psa": 57.53,
+        "rtb": 1,
+        "ro5_violations": 0
+      }
+    },
+    {
+      "molecule_chembl_id": "CHEMBL1235",
+      "pref_name": "SALSALATE",
+      "similarity": 84.7,
+      "max_phase": 4,
+      "molecule_structures": {
+        "canonical_smiles": "O=C(Oc1ccccc1C(=O)O)c1ccccc1O",
+        "standard_inchi_key": "WKGDMHNKNIPBCA-UHFFFAOYSA-N"
+      },
+      "molecule_properties": {
+        "full_mwt": 258.23,
+        "alogp": 2.76,
+        "hbd": 2,
+        "hba": 4,
+        "psa": 83.83,
+        "rtb": 3,
+        "ro5_violations": 0
+      }
+    },
+    {
+      "molecule_chembl_id": "CHEMBL501",
+      "pref_name": "BENORYLATE",
+      "similarity": 81.3,
+      "max_phase": 4,
+      "molecule_structures": {
+        "canonical_smiles": "CC(=O)Nc1ccc(OC(=O)c2ccccc2OC(C)=O)cc1",
+        "standard_inchi_key": "KNAHPPKUSKPBAG-UHFFFAOYSA-N"
+      },
+      "molecule_properties": {
+        "full_mwt": 313.31,
+        "alogp": 2.37,
+        "hbd": 1,
+        "hba": 5,
+        "psa": 78.43,
+        "rtb": 4,
+        "ro5_violations": 0
+      }
+    }
+  ],
+  "page_meta": {
+    "limit": 10,
+    "next": null,
+    "offset": 0,
+    "previous": null,
+    "total_count": 5
+  },
+  "_license_notice": "Data from the ChEMBL Database. Please review the licensing terms at https://www.ebi.ac.uk/chembl/"
+}

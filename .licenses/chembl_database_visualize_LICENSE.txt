@@ -1,0 +1,2 @@
+Notification: Please check the ChEMBL terms of use and licensing at https://chembl.gitbook.io/chembl-interface-documentation/about and https://www.ebi.ac.uk/chembl/. ChEMBL data is available under CC BY-SA 3.0 / CC BY-SA 4.0.
+Timestamp: 2026-09-18T15:16:00Z

@@ -1,0 +1,85 @@
+{
+  "molecule_chembl_id": "CHEMBL25",
+  "pref_name": "ASPIRIN",
+  "synonyms": [
+    "Acetylsalicylic acid",
+    "Aspirin",
+    "Ecotrin",
+    "Empirin",
+    "2-Acetyloxybenzoic acid"
+  ],
+  "molecule_type": "Small molecule",
+  "max_phase": 4,
+  "first_approval": 1899,
+  "structure_type": "MOL",
+  "chirality": 0,
+  "dosed_ingredient": true,
+  "black_box_warning": 0,
+  "natural_product": 0,
+  "first_in_class": 0,
+  "prodrug": 0,
+  "oral": true,
+  "parenteral": true,
+  "topical": false,
+  "molecule_structures": {
+    "canonical_smiles": "CC(=O)Oc1ccccc1C(=O)O",
+    "standard_inchi": "InChI=1S/C9H8O4/c1-6(10)13-8-5-3-2-4-7(8)9(11)12/h2-5H,1H3,(H,11,12)",
+    "standard_inchi_key": "BSYNRYMUTXBXSQ-UHFFFAOYSA-N"
+  },
+  "molecule_properties": {
+    "full_mwt": 180.16,
+    "full_molformula": "C9H8O4",
+    "mw_monoisotopic": 180.0423,
+    "mw_freebase": 180.16,
+    "alogp": 1.31,
+    "hbd": 1,
+    "hba": 3,
+    "psa": 63.6,
+    "rtb": 2,
+    "ro5_violations": 0,
+    "aromatic_rings": 1,
+    "heavy_atoms": 13,
+    "num_alerts": 0,
+    "qed_weighted": 0.65,
+    "np_likeness_score": -0.85
+  },
+  "mechanisms": [
+    {
+      "mechanism_of_action": "Cyclooxygenase-1 inhibitor",
+      "action_type": "INHIBITOR",
+      "target_chembl_id": "CHEMBL221",
+      "target_name": "Cyclooxygenase-1",
+      "direct_interaction": true,
+      "disease_efficacy": true
+    },
+    {
+      "mechanism_of_action": "Cyclooxygenase-2 inhibitor",
+      "action_type": "INHIBITOR",
+      "target_chembl_id": "CHEMBL230",
+      "target_name": "Cyclooxygenase-2",
+      "direct_interaction": true,
+      "disease_efficacy": true
+    }
+  ],
+  "indications": [
+    {
+      "efo_term": "fever",
+      "mesh_heading": "Fever",
+      "max_phase_for_ind": 4,
+      "atc_code": "N02BA01"
+    },
+    {
+      "efo_term": "pain",
+      "mesh_heading": "Pain",
+      "max_phase_for_ind": 4,
+      "atc_code": "N02BA01"
+    },
+    {
+      "efo_term": "myocardial infarction",
+      "mesh_heading": "Myocardial Infarction",
+      "max_phase_for_ind": 4,
+      "atc_code": "B01AC06"
+    }
+  ],
+  "_license_notice": "Data from the ChEMBL Database. Please review the licensing terms at https://www.ebi.ac.uk/chembl/"
+}

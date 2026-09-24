@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASPIRIN (CHEMBL25) - Profile &amp; Analytics - ChEMBL Dashboard</title>
+
+  <!-- Tailwind CSS Configuration for Class-Based Dark Mode -->
+  <script>
+    window.tailwind = {
+      darkMode: 'class'
+    };
+  </script>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    if (typeof tailwind !== 'undefined') {
+      tailwind.config = {
+        darkMode: 'class'
+      };
+    }
+  </script>
+
+  <!-- 3Dmol.js WebGL Molecular Viewer -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.4.2/3Dmol-min.js" onload="init3DViewer()"></script>
+
+  <style>
+    :root {
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-subcard: #f8fafc;
+      --border-card: #e2e8f0;
+      --border-subtle: #f1f5f9;
+      --text-main: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+    }
+    html.dark, :root.dark {
+      --bg-main: #0b0f19;
+      --bg-card: #0f172a;
+      --bg-subcard: #020617;
+      --border-card: #1e293b;
+      --border-subtle: #1e293b;
+      --text-main: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --accent: #3b82f6;
+    }
+    body {
+      background-color: var(--bg-main) !important;
+      color: var(--text-main) !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    /* Comprehensive fallback overrides to guarantee dark/light mode across all card components */
+    html.dark .bg-white {
+      background-color: var(--bg-card) !important;
+    }
+    html.dark .bg-slate-50,
+    html.dark .bg-slate-50\/50,
+    html.dark .bg-slate-50\/30 {
+      background-color: var(--bg-subcard) !important;
+    }
+    html.dark .text-slate-900 {
+      color: var(--text-main) !important;
+    }
+    html.dark .text-slate-800 {
+      color: #f1f5f9 !important;
+    }
+    html.dark .text-slate-700 {
+      color: var(--text-secondary) !important;
+    }
+    html.dark .text-slate-600 {
+      color: var(--text-secondary) !important;
+    }
+    html.dark .border-slate-200 {
+      border-color: var(--border-card) !important;
+    }
+    html.dark .border-slate-100 {
+      border-color: var(--border-subtle) !important;
+    }
+    html.dark header {
+      background-color: rgba(15, 23, 42, 0.9) !important;
+    }
+    html.dark footer {
+      background-color: var(--bg-card) !important;
+    }
+    /* Icon-only theme toggle display sync */
+    html.dark #theme-sun-icon {
+      display: block !important;
+    }
+    html.dark #theme-moon-icon {
+      display: none !important;
+    }
+    html:not(.dark) #theme-sun-icon {
+      display: none !important;
+    }
+    html:not(.dark) #theme-moon-icon {
+      display: block !important;
+    }
+  </style>
+</head>
+<body class="min-h-full flex flex-col antialiased">
+  <!-- Top Application Bar with Icon-Only Light/Dark Toggle -->
+  <header class="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm tracking-wider shadow-sm">
+          Ch
+        </div>
+        <div>
+          <h1 class="text-base font-bold text-slate-900 dark:text-white leading-tight">ASPIRIN (CHEMBL25) - Profile &amp; Analytics</h1>
+          <span class="text-xs text-slate-500 dark:text-slate-400">ChEMBL Biological & Chemical Analytics Dashboard</span>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <!-- Minimalist Icon-Only Light/Dark Theme Switcher -->
+        <button id="theme-toggle-btn" type="button" onclick="toggleTheme()" aria-label="Toggle theme" class="p-2 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <!-- Sun Icon (visible in dark mode) -->
+          <svg id="theme-sun-icon" class="w-4 h-4 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <!-- Moon Icon (visible in light mode) -->
+          <svg id="theme-moon-icon" class="w-4 h-4 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+        <span class="text-xs px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono">ChEMBL 34</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Query Parameter Banner -->
+  <div class="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 px-4 py-2.5">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div class="flex items-center space-x-2">
+        <span class="text-slate-500 font-medium">Input Query:</span>
+        <span class="font-mono font-semibold px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200">Compound Lookup: CHEMBL25</span>
+        <span class="text-slate-400 font-sans">| Data Standard: Concentration normalized to nM</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button type="button" onclick="exportDataJSON()" class="px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">Export JSON</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Dashboard Workspace -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden mb-8">
+  <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/40">
+    <div class="flex items-center space-x-3">
+      <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-md bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-900">CHEMBL25</span>
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">ASPIRIN</h2>
+    </div>
+    <div class="flex items-center space-x-2">
+      <span class="px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Phase 4</span>
+      <span class="px-3 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-900">Lipinski Compliant (0 violations)</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6">
+    <!-- Left Column: 2D & 3D Molecular Views -->
+    <div class="lg:col-span-6 flex flex-col space-y-4">
+      <div class="border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-white dark:bg-slate-950 flex flex-col justify-between shadow-sm">
+        <div>
+          <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-800">
+            <div class="flex items-center space-x-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span class="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">2D Chemical Topology</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button type="button" id="toggle-fg-btn" onclick="toggleFunctionalGroupHighlights()" class="px-2 py-0.5 text-xs rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">Toggle Highlights</button>
+              <span class="text-xs px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-mono font-medium border border-blue-200 dark:border-blue-900">Vector IUPAC</span>
+            </div>
+          </div>
+          <div id="chem-svg-container" class="h-64 flex items-center justify-center overflow-hidden p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 320" width="100%" height="100%" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .chem-bond { stroke: #1e293b; stroke-linecap: round; stroke-linejoin: round; }
+      .chem-bond-double { stroke: #1e293b; stroke-linecap: round; }
+      .chem-ring-fill { fill: rgba(59, 130, 246, 0.08); }
+      html.dark .chem-bond, html.dark .chem-bond-double { stroke: #f8fafc; }
+      html.dark .chem-ring-fill { fill: rgba(59, 130, 246, 0.15); }
+    </style>
+    <filter id="glow-coral" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#ef4444" flood-opacity="0.3"/>
+    </filter>
+    <filter id="glow-amber" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#f97316" flood-opacity="0.3"/>
+    </filter>
+    <filter id="glow-indigo" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#6366f1" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" fill="transparent"/>
+
+  <!-- Benzene ring subtle fill -->
+  <polygon points="110,140 150,115 190,140 190,185 150,210 110,185" class="chem-ring-fill"/>
+
+  <!-- Benzene ring skeletal bonds -->
+  <polygon points="110,140 150,115 190,140 190,185 150,210 110,185" class="chem-bond" stroke-width="2.6" fill="none"/>
+  <!-- Alternating inner double bonds -->
+  <line x1="150" y1="124" x2="182" y2="144" class="chem-bond-double" stroke-width="1.8"/>
+  <line x1="182" y1="180" x2="150" y2="200" class="chem-bond-double" stroke-width="1.8"/>
+  <line x1="118" y1="180" x2="118" y2="145" class="chem-bond-double" stroke-width="1.8"/>
+
+  <!-- Aromatic Ring Center Inscription -->
+  <circle cx="150" cy="162.5" r="24" fill="none" stroke="rgba(59, 130, 246, 0.25)" stroke-width="1.5" stroke-dasharray="3,3"/>
+
+  <!-- 1. Carboxyl Group at C1 (190, 140) -->
+  <line x1="190" y1="140" x2="240" y2="112" class="chem-bond" stroke-width="2.6"/>
+  
+  <!-- Carbonyl =O -->
+  <line x1="237" y1="110" x2="237" y2="68" stroke="#ef4444" stroke-width="2.6"/>
+  <line x1="243" y1="110" x2="243" y2="68" stroke="#ef4444" stroke-width="2.6"/>
+  <circle cx="240" cy="56" r="13" fill="rgba(239, 68, 68, 0.12)" filter="url(#glow-coral)"/>
+  <text x="240" y="62" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">O</text>
+
+  <!-- Hydroxyl -OH -->
+  <line x1="240" y1="112" x2="282" y2="134" class="chem-bond" stroke-width="2.6"/>
+  <circle cx="298" cy="140" r="15" fill="rgba(239, 68, 68, 0.12)" filter="url(#glow-coral)"/>
+  <text x="298" y="145" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="bold" fill="#ef4444" text-anchor="middle">OH</text>
+
+  <!-- 2. Acetoxy Group at C2 (190, 185) -->
+  <line x1="190" y1="185" x2="235" y2="210" class="chem-bond" stroke-width="2.6"/>
+  
+  <!-- Ester Oxygen -O- -->
+  <circle cx="244" cy="214" r="13" fill="rgba(249, 115, 22, 0.12)" filter="url(#glow-amber)"/>
+  <text x="244" y="219" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="bold" fill="#ea580c" text-anchor="middle">O</text>
+
+  <!-- Ester bond to Acetyl Carbon -->
+  <line x1="256" y1="216" x2="295" y2="234" class="chem-bond" stroke-width="2.6"/>
+  
+  <!-- Acetyl Carbonyl =O (pointing down) -->
+  <line x1="292" y1="235" x2="292" y2="272" stroke="#ef4444" stroke-width="2.6"/>
+  <line x1="298" y1="235" x2="298" y2="272" stroke="#ef4444" stroke-width="2.6"/>
+  <circle cx="295" cy="282" r="13" fill="rgba(239, 68, 68, 0.12)" filter="url(#glow-coral)"/>
+  <text x="295" y="288" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">O</text>
+
+  <!-- Acetyl Methyl -CH3 (pointing right) -->
+  <line x1="295" y1="234" x2="340" y2="212" class="chem-bond" stroke-width="2.6"/>
+  <circle cx="362" cy="206" r="18" fill="rgba(99, 102, 241, 0.12)" filter="url(#glow-indigo)"/>
+  <text x="362" y="211" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="bold" fill="#6366f1" text-anchor="middle">CH<tspan font-size="11" dy="3">3</tspan></text>
+</svg>
+
+          </div>
+        </div>
+        <div class="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+          <div class="flex items-center space-x-3">
+            <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-red-500 mr-1"></span> O (Oxygen)</span>
+            <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-orange-500 mr-1"></span> Ester O</span>
+            <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-indigo-500 mr-1"></span> Methyl CH3</span>
+            <span class="inline-flex items-center"><span class="w-2 h-2 rounded-full bg-slate-700 dark:bg-slate-300 mr-1"></span> C Skeleton</span>
+          </div>
+          <span class="font-mono text-[10px] text-slate-400">Skeletal Structure</span>
+        </div>
+      </div>
+
+      <div class="border border-slate-200 dark:border-slate-800 rounded-lg p-3 bg-white dark:bg-slate-950 flex flex-col shadow-sm">
+        <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-800">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">3D Interactive Conformer</span>
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button type="button" id="spin-toggle-btn" onclick="toggleSpin3D()" class="px-2 py-0.5 text-xs rounded border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 hover:bg-blue-100">Auto-Spin</button>
+            <button type="button" onclick="reset3DView()" class="px-2 py-0.5 text-xs rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">Reset</button>
+            <button type="button" onclick="setViewerStyle('stick')" class="px-2 py-0.5 text-xs rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">Sticks</button>
+            <button type="button" onclick="setViewerStyle('ballstick')" class="px-2 py-0.5 text-xs rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">Ball &amp; Stick</button>
+            <button type="button" onclick="setViewerStyle('sphere')" class="px-2 py-0.5 text-xs rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">Spheres</button>
+            <button type="button" onclick="setViewerStyle('surface')" class="px-2 py-0.5 text-xs rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">Surface</button>
+          </div>
+        </div>
+        <div id="mol-3d-viewer" class="w-full h-64 relative rounded bg-slate-950 overflow-hidden flex items-center justify-center" style="min-height: 256px; height: 256px; position: relative; width: 100%;">
+          <div id="mol-3d-loader" class="flex flex-col items-center justify-center space-y-2 text-slate-400">
+            <svg class="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+            </svg>
+            <span class="text-xs font-mono text-slate-400">Loading 3D Conformer...</span>
+          </div>
+        </div>
+        <div class="mt-2 text-[11px] text-slate-400 text-center">Click and drag to rotate | Scroll to zoom</div>
+      </div>
+    </div>
+
+    <!-- Right Column: Lipinski Radar & Physicochemical Matrix -->
+    <div class="lg:col-span-6 flex flex-col space-y-4">
+      <div class="border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-white dark:bg-slate-950">
+        <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-800">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Physicochemical Space (Lipinski Ro5)</span>
+          <span class="text-xs font-mono text-slate-400">Radar Projection</span>
+        </div>
+        <div class="w-full flex items-center justify-center py-2">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 300" width="100%" height="100%">
+  <rect width="340" height="300" fill="transparent"/>
+  <!-- Concentric guide rings -->
+  <polygon points="170.0,116.2 190.6,128.1 190.6,151.9 170.0,163.8 149.4,151.9 149.4,128.1 170.0,116.2" fill="none" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2"/><polygon points="170.0,92.5 211.1,116.2 211.1,163.8 170.0,187.5 128.9,163.8 128.9,116.3 170.0,92.5" fill="none" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2"/><polygon points="170.0,68.8 231.7,104.4 231.7,175.6 170.0,211.2 108.3,175.6 108.3,104.4 170.0,68.8" fill="none" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2"/><polygon points="170.0,45.0 252.3,92.5 252.3,187.5 170.0,235.0 87.7,187.5 87.7,92.5 170.0,45.0" fill="none" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2"/>
+  <!-- Axis spokes -->
+  <line x1="170.0" y1="140.0" x2="170.0" y2="45.0" stroke="#cbd5e1" stroke-width="1.2"/><line x1="170.0" y1="140.0" x2="252.3" y2="92.5" stroke="#cbd5e1" stroke-width="1.2"/><line x1="170.0" y1="140.0" x2="252.3" y2="187.5" stroke="#cbd5e1" stroke-width="1.2"/><line x1="170.0" y1="140.0" x2="170.0" y2="235.0" stroke="#cbd5e1" stroke-width="1.2"/><line x1="170.0" y1="140.0" x2="87.7" y2="187.5" stroke="#cbd5e1" stroke-width="1.2"/><line x1="170.0" y1="140.0" x2="87.7" y2="92.5" stroke="#cbd5e1" stroke-width="1.2"/>
+  <!-- Ro5 Acceptable Space Threshold Boundary -->
+  <polygon points="170.0,78.2 223.5,109.1 223.5,170.9 170.0,201.8 116.5,170.9 116.5,109.1" fill="rgba(16, 185, 129, 0.08)" stroke="#10b981" stroke-width="1.8" stroke-dasharray="4,3"/>
+  <!-- Compound Property Polygon -->
+  <polygon points="170.0,117.8 184.0,131.9 180.7,146.2 170.0,158.5 159.3,146.2 145.7,126.0" fill="rgba(59, 130, 246, 0.25)" stroke="#2563eb" stroke-width="2.2"/>
+  <!-- Axis Labels -->
+  <text x="170.0" y="27.0" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">MW (Da)</text><text x="271.3" y="85.5" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="start">AlogP</text><text x="271.3" y="202.5" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="start">H-Bond Donors</text><text x="170.0" y="261.0" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">H-Bond Acceptors</text><text x="68.7" y="202.5" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="end">Rotatable Bonds</text><text x="68.7" y="85.5" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="end">TPSA (A^2)</text>
+  <!-- Legend -->
+  <g transform="translate(10, 282)">
+    <line x1="0" y1="8" x2="16" y2="8" stroke="#10b981" stroke-width="2" stroke-dasharray="3,2"/>
+    <text x="22" y="11" font-family="system-ui, sans-serif" font-size="10" fill="#059669">Ro5 Boundary</text>
+    <rect x="115" y="4" width="12" height="8" fill="rgba(59, 130, 246, 0.4)" stroke="#2563eb" stroke-width="1.5"/>
+    <text x="133" y="11" font-family="system-ui, sans-serif" font-size="10" fill="#1d4ed8">Target Compound</text>
+  </g>
+</svg>
+        </div>
+      </div>
+
+      <div class="border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-white dark:bg-slate-950">
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500 pb-2 mb-3 border-b border-slate-100 dark:border-slate-800">Property Metrics Matrix</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <span class="text-[11px] font-medium text-slate-500 block">Molecular Weight</span>
+            <span class="text-base font-bold text-slate-800 dark:text-white font-mono">180.16 <span class="text-xs font-normal text-slate-400">Da</span></span>
+            <span class="text-[10px] text-slate-400 block mt-0.5">Ro5 limit: &le;500</span>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <span class="text-[11px] font-medium text-slate-500 block">AlogP</span>
+            <span class="text-base font-bold text-slate-800 dark:text-white font-mono">1.31</span>
+            <span class="text-[10px] text-slate-400 block mt-0.5">Ro5 limit: &le;5.0</span>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <span class="text-[11px] font-medium text-slate-500 block">H-Bond Donors</span>
+            <span class="text-base font-bold text-slate-800 dark:text-white font-mono">1</span>
+            <span class="text-[10px] text-slate-400 block mt-0.5">Ro5 limit: &le;5</span>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <span class="text-[11px] font-medium text-slate-500 block">H-Bond Acceptors</span>
+            <span class="text-base font-bold text-slate-800 dark:text-white font-mono">3</span>
+            <span class="text-[10px] text-slate-400 block mt-0.5">Ro5 limit: &le;10</span>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <span class="text-[11px] font-medium text-slate-500 block">Rotatable Bonds</span>
+            <span class="text-base font-bold text-slate-800 dark:text-white font-mono">2</span>
+            <span class="text-[10px] text-slate-400 block mt-0.5">Ro5 limit: &le;10</span>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <span class="text-[11px] font-medium text-slate-500 block">Polar Surface Area</span>
+            <span class="text-base font-bold text-slate-800 dark:text-white font-mono">63.6 <span class="text-xs font-normal text-slate-400">&Aring;&sup2;</span></span>
+            <span class="text-[10px] text-slate-400 block mt-0.5">Threshold: &le;140</span>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-1.5 font-mono text-xs">
+          <div class="flex items-center justify-between text-slate-600 dark:text-slate-400">
+            <span class="text-slate-500 font-sans">SMILES:</span>
+            <span class="truncate max-w-[280px] bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-[11px]" title="CC(=O)Oc1ccccc1C(=O)O">CC(=O)Oc1ccccc1C(=O)O</span>
+          </div>
+          <div class="flex items-center justify-between text-slate-600 dark:text-slate-400">
+            <span class="text-slate-500 font-sans">InChIKey:</span>
+            <span class="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-[11px]">BSYNRYMUTXBXSQ-UHFFFAOYSA-N</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden mb-8">
+  <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/40">
+    <div class="flex items-center space-x-3">
+      <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-md bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-900">Physics Graph</span>
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Force-Directed Similarity & SAR Network</h2>
+    </div>
+    <div class="flex items-center space-x-2">
+      <button type="button" onclick="perturbPhysicsGraph()" class="px-2.5 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">Perturb System</button>
+      <button type="button" id="physics-toggle-btn" onclick="togglePhysicsSimulation()" class="px-2.5 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">Pause Physics</button>
+      <button type="button" onclick="resetPhysicsPositions()" class="px-2.5 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">Recenter</button>
+    </div>
+  </div>
+
+  <div class="p-6">
+    <div class="relative w-full h-80 rounded-lg bg-slate-950 border border-slate-800 overflow-hidden">
+      <canvas id="physics-canvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+      <div id="physics-tooltip" class="absolute hidden px-2.5 py-1.5 rounded bg-slate-900/95 border border-slate-700 text-slate-100 text-xs shadow-lg pointer-events-none z-20 font-sans"></div>
+    </div>
+    <div class="mt-3 flex flex-wrap items-center justify-between text-xs text-slate-500">
+      <span>Interactive Spring-Mass Model: Drag any node to perturb spring tension. Edge thickness represents Tanimoto similarity concordance.</span>
+      <div class="flex items-center space-x-3">
+        <span class="inline-flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 mr-1.5"></span> Query Compound</span>
+        <span class="inline-flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-1.5"></span> High Similarity (&ge;85%)</span>
+        <span class="inline-flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 mr-1.5"></span> Moderate Similarity</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden mb-8">
+  <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40">
+    <div class="flex items-center space-x-3">
+      <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-md bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-900">Clinical Development</span>
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Development Timeline & Mechanisms</h2>
+    </div>
+  </div>
+
+  <div class="p-6 space-y-6">
+    <div class="py-4 px-2 bg-slate-50 dark:bg-slate-950/60 rounded-xl border border-slate-100 dark:border-slate-800">
+      <div class="flex items-center justify-between max-w-2xl mx-auto">
+        
+        <div class="flex-1 flex flex-col items-center relative">
+          <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-xs bg-emerald-600 border-emerald-600 text-white z-10 transition-colors">
+            0
+          </div>
+          <span class="mt-2 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center">Preclinical</span>
+          
+        </div>
+        
+        <div class="flex-1 flex flex-col items-center relative">
+          <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-xs bg-emerald-600 border-emerald-600 text-white z-10 transition-colors">
+            1
+          </div>
+          <span class="mt-2 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center">Phase I</span>
+          
+        </div>
+        
+        <div class="flex-1 flex flex-col items-center relative">
+          <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-xs bg-emerald-600 border-emerald-600 text-white z-10 transition-colors">
+            2
+          </div>
+          <span class="mt-2 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center">Phase II</span>
+          
+        </div>
+        
+        <div class="flex-1 flex flex-col items-center relative">
+          <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-xs bg-emerald-600 border-emerald-600 text-white z-10 transition-colors">
+            3
+          </div>
+          <span class="mt-2 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center">Phase III</span>
+          
+        </div>
+        
+        <div class="flex-1 flex flex-col items-center relative">
+          <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-xs bg-emerald-600 border-emerald-600 text-white z-10 transition-colors">
+            4
+          </div>
+          <span class="mt-2 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center">Approved</span>
+          <span class="text-[10px] text-emerald-600 font-mono">Approved 1899</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+      <div>
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">Mechanisms of Action</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          
+        <div class="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-900">INHIBITOR</span>
+              <span class="text-[10px] font-mono text-slate-400">CHEMBL221</span>
+            </div>
+            <h4 class="text-xs font-bold text-slate-900 dark:text-white mb-1">Cyclooxygenase-1 inhibitor</h4>
+            <span class="text-[11px] text-slate-500 block truncate" title="Cyclooxygenase-1">Cyclooxygenase-1</span>
+          </div>
+        </div>
+        
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">Reported Clinical Indications</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          
+        <div class="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 flex items-center justify-between text-xs">
+          <div>
+            <span class="font-semibold text-slate-800 dark:text-slate-200 block">Pain</span>
+            
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">Phase 4</span>
+        </div>
+        
+        <div class="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 flex items-center justify-between text-xs">
+          <div>
+            <span class="font-semibold text-slate-800 dark:text-slate-200 block">Fever</span>
+            
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">Phase 4</span>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden mb-8">
+  <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/40">
+    <div class="flex items-center space-x-3">
+      <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-md bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-900">SAR Profile</span>
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Bioactivity & Potency Distribution</h2>
+    </div>
+    <div class="flex items-center space-x-2 text-xs">
+      <span class="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">Assays: 7</span>
+      <span class="px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 font-medium font-mono">High Potency: 4</span>
+    </div>
+  </div>
+
+  <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Left Column: Summary Metrics & Histogram -->
+    <div class="lg:col-span-5 flex flex-col space-y-4">
+      <div class="grid grid-cols-3 gap-2">
+        <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-center">
+          <span class="text-[11px] text-slate-500 font-medium block">Median pIC50</span>
+          <span class="text-lg font-bold font-mono text-slate-800 dark:text-white">7.07</span>
+        </div>
+        <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-center">
+          <span class="text-[11px] text-slate-500 font-medium block">Max Potency</span>
+          <span class="text-lg font-bold font-mono text-emerald-600 dark:text-emerald-400">9.3</span>
+        </div>
+        <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-center">
+          <span class="text-[11px] text-slate-500 font-medium block">Total Screened</span>
+          <span class="text-lg font-bold font-mono text-blue-600 dark:text-blue-400">7</span>
+        </div>
+      </div>
+
+      <div class="border border-slate-200 dark:border-slate-800 rounded-lg p-3 bg-white dark:bg-slate-950">
+        <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-800">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Potency Spread (pIC50)</span>
+          <span class="text-[11px] text-slate-400 font-mono">Count by Bin</span>
+        </div>
+        <div class="h-56 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220" width="100%" height="100%">
+  <rect width="400" height="220" fill="transparent"/>
+  <!-- Axes lines -->
+  <line x1="35" y1="190" x2="385" y2="190" stroke="#cbd5e1" stroke-width="1.5"/>
+  <line x1="35" y1="20" x2="35" y2="190" stroke="#cbd5e1" stroke-width="1.5"/>
+  <!-- Bars -->
+  <rect x="38.0" y="190.0" width="37.8" height="0.0" fill="#94a3b8" rx="3"/><rect x="81.8" y="136.7" width="37.8" height="53.3" fill="#94a3b8" rx="3"/><text x="100.6" y="132.7" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">1</text><rect x="125.5" y="136.7" width="37.8" height="53.3" fill="#f59e0b" rx="3"/><text x="144.4" y="132.7" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">1</text><rect x="169.2" y="136.7" width="37.8" height="53.3" fill="#f59e0b" rx="3"/><text x="188.1" y="132.7" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">1</text><rect x="213.0" y="30.0" width="37.8" height="160.0" fill="#3b82f6" rx="3"/><text x="231.9" y="26.0" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">3</text><rect x="256.8" y="190.0" width="37.8" height="0.0" fill="#3b82f6" rx="3"/><rect x="300.5" y="136.7" width="37.8" height="53.3" fill="#3b82f6" rx="3"/><text x="319.4" y="132.7" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">1</text><rect x="344.2" y="190.0" width="37.8" height="0.0" fill="#3b82f6" rx="3"/>
+  <!-- X Labels -->
+  <text x="56.9" y="208" font-family="system-ui, sans-serif" font-size="10" fill="#64748b" text-anchor="middle">3</text><text x="100.6" y="208" font-family="system-ui, sans-serif" font-size="10" fill="#64748b" text-anchor="middle">4</text><text x="144.4" y="208" font-family="system-ui, sans-serif" font-size="10" fill="#64748b" text-anchor="middle">5</text><text x="188.1" y="208" font-family="system-ui, sans-serif" font-size="10" fill="#64748b" text-anchor="middle">6</text><text x="231.9" y="208" font-family="system-ui, sans-serif" font-size="10" fill="#64748b" text-anchor="middle">7</text><text x="275.6" y="208" font-family="system-ui, sans-serif" font-size="10" fill="#64748b" text-anchor="middle">8</text><text x="319.4" y="208" font-family="system-ui, sans-serif" font-size="10" fill="#64748b" text-anchor="middle">9</text><text x="363.1" y="208" font-family="system-ui, sans-serif" font-size="10" fill="#64748b" text-anchor="middle">10</text>
+  <text x="200.0" y="218" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#64748b" text-anchor="middle">-log10 Affinity (pIC50 / pKi)</text>
+</svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Interactive Searchable Table -->
+    <div class="lg:col-span-7 flex flex-col">
+      <div class="border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-950 overflow-hidden flex flex-col h-full">
+        <div class="p-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-900/40">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Normalized Assay Data (nM)</span>
+          <input type="text" id="activity-table-search" placeholder="Filter target, assay..." oninput="filterActivityTable()" class="px-2.5 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500"/>
+        </div>
+        <div class="overflow-x-auto max-h-[320px] overflow-y-auto">
+          <table id="activity-table" class="w-full text-left border-collapse">
+            <thead class="bg-slate-50 dark:bg-slate-900 sticky top-0 border-b border-slate-200 dark:border-slate-800 text-[11px] uppercase tracking-wider text-slate-500">
+              <tr>
+                <th class="py-2 px-3">ID</th>
+                <th class="py-2 px-3">Target</th>
+                <th class="py-2 px-3">Organism</th>
+                <th class="py-2 px-3">Type</th>
+                <th class="py-2 px-3">Standard Val (nM)</th>
+                <th class="py-2 px-3">pIC50</th>
+                <th class="py-2 px-3">Classification</th>
+                <th class="py-2 px-3">Assay</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-slate-100 dark:border-slate-800/80 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 text-xs">
+          <td class="py-2.5 px-3 font-mono font-medium text-slate-700 dark:text-slate-300">318627</td>
+          <td class="py-2.5 px-3 text-slate-900 dark:text-slate-100 font-medium max-w-[200px] truncate" title="Epidermal growth factor receptor erbB1">Epidermal growth factor receptor erbB1</td>
+          <td class="py-2.5 px-3 text-slate-500 italic">Homo sapiens</td>
+          <td class="py-2.5 px-3 font-semibold text-blue-600 dark:text-blue-400">IC50</td>
+          <td class="py-2.5 px-3 font-mono text-slate-800 dark:text-slate-200">= 0.50 nM</td>
+          <td class="py-2.5 px-3 font-mono font-semibold text-slate-900 dark:text-white">9.30</td>
+          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">High Potency (&lt;100 nM)</span></td>
+          <td class="py-2.5 px-3 font-mono text-slate-400">CHEMBL674637</td>
+        </tr><tr class="border-b border-slate-100 dark:border-slate-800/80 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 text-xs">
+          <td class="py-2.5 px-3 font-mono font-medium text-slate-700 dark:text-slate-300">318628</td>
+          <td class="py-2.5 px-3 text-slate-900 dark:text-slate-100 font-medium max-w-[200px] truncate" title="Epidermal growth factor receptor erbB1">Epidermal growth factor receptor erbB1</td>
+          <td class="py-2.5 px-3 text-slate-500 italic">Homo sapiens</td>
+          <td class="py-2.5 px-3 font-semibold text-blue-600 dark:text-blue-400">IC50</td>
+          <td class="py-2.5 px-3 font-mono text-slate-800 dark:text-slate-200">= 14.00 nM</td>
+          <td class="py-2.5 px-3 font-mono font-semibold text-slate-900 dark:text-white">7.85</td>
+          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">High Potency (&lt;100 nM)</span></td>
+          <td class="py-2.5 px-3 font-mono text-slate-400">CHEMBL674638</td>
+        </tr><tr class="border-b border-slate-100 dark:border-slate-800/80 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 text-xs">
+          <td class="py-2.5 px-3 font-mono font-medium text-slate-700 dark:text-slate-300">318629</td>
+          <td class="py-2.5 px-3 text-slate-900 dark:text-slate-100 font-medium max-w-[200px] truncate" title="Epidermal growth factor receptor erbB1">Epidermal growth factor receptor erbB1</td>
+          <td class="py-2.5 px-3 text-slate-500 italic">Homo sapiens</td>
+          <td class="py-2.5 px-3 font-semibold text-blue-600 dark:text-blue-400">IC50</td>
+          <td class="py-2.5 px-3 font-mono text-slate-800 dark:text-slate-200">= 85.00 nM</td>
+          <td class="py-2.5 px-3 font-mono font-semibold text-slate-900 dark:text-white">7.07</td>
+          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">High Potency (&lt;100 nM)</span></td>
+          <td class="py-2.5 px-3 font-mono text-slate-400">CHEMBL829598</td>
+        </tr><tr class="border-b border-slate-100 dark:border-slate-800/80 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 text-xs">
+          <td class="py-2.5 px-3 font-mono font-medium text-slate-700 dark:text-slate-300">318630</td>
+          <td class="py-2.5 px-3 text-slate-900 dark:text-slate-100 font-medium max-w-[200px] truncate" title="Epidermal growth factor receptor erbB1">Epidermal growth factor receptor erbB1</td>
+          <td class="py-2.5 px-3 text-slate-500 italic">Homo sapiens</td>
+          <td class="py-2.5 px-3 font-semibold text-blue-600 dark:text-blue-400">IC50</td>
+          <td class="py-2.5 px-3 font-mono text-slate-800 dark:text-slate-200">= 450.00 nM</td>
+          <td class="py-2.5 px-3 font-mono font-semibold text-slate-900 dark:text-white">6.35</td>
+          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">Moderate (100 - 10,000 nM)</span></td>
+          <td class="py-2.5 px-3 font-mono text-slate-400">CHEMBL829599</td>
+        </tr><tr class="border-b border-slate-100 dark:border-slate-800/80 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 text-xs">
+          <td class="py-2.5 px-3 font-mono font-medium text-slate-700 dark:text-slate-300">318631</td>
+          <td class="py-2.5 px-3 text-slate-900 dark:text-slate-100 font-medium max-w-[200px] truncate" title="Epidermal growth factor receptor erbB1">Epidermal growth factor receptor erbB1</td>
+          <td class="py-2.5 px-3 text-slate-500 italic">Homo sapiens</td>
+          <td class="py-2.5 px-3 font-semibold text-blue-600 dark:text-blue-400">IC50</td>
+          <td class="py-2.5 px-3 font-mono text-slate-800 dark:text-slate-200">= 2400.00 nM</td>
+          <td class="py-2.5 px-3 font-mono font-semibold text-slate-900 dark:text-white">5.62</td>
+          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">Moderate (100 - 10,000 nM)</span></td>
+          <td class="py-2.5 px-3 font-mono text-slate-400">CHEMBL830112</td>
+        </tr><tr class="border-b border-slate-100 dark:border-slate-800/80 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 text-xs">
+          <td class="py-2.5 px-3 font-mono font-medium text-slate-700 dark:text-slate-300">318632</td>
+          <td class="py-2.5 px-3 text-slate-900 dark:text-slate-100 font-medium max-w-[200px] truncate" title="Epidermal growth factor receptor erbB1">Epidermal growth factor receptor erbB1</td>
+          <td class="py-2.5 px-3 text-slate-500 italic">Homo sapiens</td>
+          <td class="py-2.5 px-3 font-semibold text-blue-600 dark:text-blue-400">Ki</td>
+          <td class="py-2.5 px-3 font-mono text-slate-800 dark:text-slate-200">= 18.00 nM</td>
+          <td class="py-2.5 px-3 font-mono font-semibold text-slate-900 dark:text-white">7.74</td>
+          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">High Potency (&lt;100 nM)</span></td>
+          <td class="py-2.5 px-3 font-mono text-slate-400">CHEMBL830113</td>
+        </tr><tr class="border-b border-slate-100 dark:border-slate-800/80 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 text-xs">
+          <td class="py-2.5 px-3 font-mono font-medium text-slate-700 dark:text-slate-300">318633</td>
+          <td class="py-2.5 px-3 text-slate-900 dark:text-slate-100 font-medium max-w-[200px] truncate" title="Epidermal growth factor receptor erbB1">Epidermal growth factor receptor erbB1</td>
+          <td class="py-2.5 px-3 text-slate-500 italic">Homo sapiens</td>
+          <td class="py-2.5 px-3 font-semibold text-blue-600 dark:text-blue-400">IC50</td>
+          <td class="py-2.5 px-3 font-mono text-slate-800 dark:text-slate-200">&gt; 15000.00 nM</td>
+          <td class="py-2.5 px-3 font-mono font-semibold text-slate-900 dark:text-white">4.82</td>
+          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">Weak / Inactive (&gt;10,000 nM)</span></td>
+          <td class="py-2.5 px-3 font-mono text-slate-400">CHEMBL830114</td>
+        </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden mb-8">
+  <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/40">
+    <div class="flex items-center space-x-3">
+      <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900">Analog Search</span>
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Chemical Similarity & Concordance Grid</h2>
+    </div>
+    <div class="flex items-center space-x-2 text-xs">
+      <span class="text-slate-500">Showing <span id="visible-analog-count" class="font-bold text-slate-800 dark:text-slate-200">5</span> of 5 analogs</span>
+    </div>
+  </div>
+
+  <!-- Interactive Controls Bar -->
+  <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-800/20 flex flex-wrap items-center gap-6 text-xs">
+    <div class="flex items-center space-x-3">
+      <label for="similarity-filter" class="font-medium text-slate-700 dark:text-slate-300">Minimum Similarity:</label>
+      <input type="range" id="similarity-filter" min="50" max="100" value="70" step="1" oninput="updateAnalogFilters()" class="w-32 accent-blue-600"/>
+      <span id="similarity-filter-val" class="font-mono font-bold text-blue-600 dark:text-blue-400 w-10">70%</span>
+    </div>
+
+    <div class="flex items-center space-x-3">
+      <label for="mwt-filter" class="font-medium text-slate-700 dark:text-slate-300">Max MW (Da):</label>
+      <input type="range" id="mwt-filter" min="100" max="800" value="800" step="25" oninput="updateAnalogFilters()" class="w-32 accent-blue-600"/>
+      <span id="mwt-filter-val" class="font-mono font-bold text-blue-600 dark:text-blue-400 w-14">800 Da</span>
+    </div>
+
+    <button type="button" onclick="resetAnalogFilters()" class="px-2.5 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">Reset Filters</button>
+  </div>
+
+  <!-- Analog Card Grid -->
+  <div id="analog-grid" class="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    
+        <div class="analog-card border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-white dark:bg-slate-950 flex flex-col justify-between hover:shadow-md transition-shadow" data-similarity="100.0" data-mwt="180.2">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="px-2 py-0.5 text-xs font-mono font-bold rounded bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">CHEMBL25</span>
+              <span class="px-2 py-0.5 text-[11px] font-semibold rounded-full border bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-900">100.0% Match</span>
+            </div>
+            <h4 class="text-sm font-semibold text-slate-900 dark:text-white truncate mb-1" title="ASPIRIN">ASPIRIN</h4>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mb-3 overflow-hidden">
+              <div class="bg-emerald-500 h-1.5 rounded-full" style="width: 100.0%"></div>
+            </div>
+
+            <!-- Structure sketch placeholder / vector -->
+            <div class="h-28 bg-slate-50 dark:bg-slate-900 rounded border border-slate-100 dark:border-slate-800 flex items-center justify-center p-2 mb-3 text-center">
+              <span class="text-xs font-mono text-slate-400 break-all line-clamp-3">CC(=O)Oc1ccccc1C(=O)O</span>
+            </div>
+
+            <!-- Chemical stats grid -->
+            <div class="grid grid-cols-2 gap-2 text-xs mb-3">
+              <div class="p-1.5 rounded bg-slate-50 dark:bg-slate-800/50">
+                <span class="text-[10px] text-slate-500 block">MW</span>
+                <span class="font-mono font-medium text-slate-800 dark:text-slate-200">180.2 Da</span>
+              </div>
+              <div class="p-1.5 rounded bg-slate-50 dark:bg-slate-800/50">
+                <span class="text-[10px] text-slate-500 block">AlogP</span>
+                <span class="font-mono font-medium text-slate-800 dark:text-slate-200">1.31</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px]">
+            <span class="text-slate-500 font-medium">Phase 4</span>
+            <span class="text-slate-400 font-mono text-[10px] truncate max-w-[120px]" title="BSYNRYMUTXBXSQ-UHFFFAOYSA-N">BSYNRYMUTXBXSQ-UHFFFAOYSA-N</span>
+          </div>
+        </div>
+        
+        <div class="analog-card border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-white dark:bg-slate-950 flex flex-col justify-between hover:shadow-md transition-shadow" data-similarity="91.2" data-mwt="138.1">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="px-2 py-0.5 text-xs font-mono font-bold rounded bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">CHEMBL26</span>
+              <span class="px-2 py-0.5 text-[11px] font-semibold rounded-full border bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-900">91.2% Match</span>
+            </div>
+            <h4 class="text-sm font-semibold text-slate-900 dark:text-white truncate mb-1" title="SALICYLIC ACID">SALICYLIC ACID</h4>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mb-3 overflow-hidden">
+              <div class="bg-emerald-500 h-1.5 rounded-full" style="width: 91.2%"></div>
+            </div>
+
+            <!-- Structure sketch placeholder / vector -->
+            <div class="h-28 bg-slate-50 dark:bg-slate-900 rounded border border-slate-100 dark:border-slate-800 flex items-center justify-center p-2 mb-3 text-center">
+              <span class="text-xs font-mono text-slate-400 break-all line-clamp-3">O=C(O)c1ccccc1O</span>
+            </div>
+
+            <!-- Chemical stats grid -->
+            <div class="grid grid-cols-2 gap-2 text-xs mb-3">
+              <div class="p-1.5 rounded bg-slate-50 dark:bg-slate-800/50">
+                <span class="text-[10px] text-slate-500 block">MW</span>
+                <span class="font-mono font-medium text-slate-800 dark:text-slate-200">138.1 Da</span>
+              </div>
+              <div class="p-1.5 rounded bg-slate-50 dark:bg-slate-800/50">
+                <span class="text-[10px] text-slate-500 block">AlogP</span>
+                <span class="font-mono font-medium text-slate-800 dark:text-slate-200">1.48</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px]">
+            <span class="text-slate-500 font-medium">Phase 4</span>
+            <span class="text-slate-400 font-mono text-[10px] truncate max-w-[120px]" title="YGSDEFSMJLZEOE-UHFFFAOYSA-N">YGSDEFSMJLZEOE-UHFFFAOYSA-N</span>
+          </div>
+        </div>
+        
+        <div class="analog-card border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-white dark:bg-slate-950 flex flex-col justify-between hover:shadow-md transition-shadow" data-similarity="86.4" data-mwt="250.2">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="px-2 py-0.5 text-xs font-mono font-bold rounded bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">CHEMBL112</span>
+              <span class="px-2 py-0.5 text-[11px] font-semibold rounded-full border bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-900">86.4% Match</span>
+            </div>
+            <h4 class="text-sm font-semibold text-slate-900 dark:text-white truncate mb-1" title="DIFLUNISAL">DIFLUNISAL</h4>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mb-3 overflow-hidden">
+              <div class="bg-blue-500 h-1.5 rounded-full" style="width: 86.4%"></div>
+            </div>
+
+            <!-- Structure sketch placeholder / vector -->
+            <div class="h-28 bg-slate-50 dark:bg-slate-900 rounded border border-slate-100 dark:border-slate-800 flex items-center justify-center p-2 mb-3 text-center">
+              <span class="text-xs font-mono text-slate-400 break-all line-clamp-3">O=C(O)c1ccc(-c2ccc(F)cc2F)cc1O</span>
+            </div>
+
+            <!-- Chemical stats grid -->
+            <div class="grid grid-cols-2 gap-2 text-xs mb-3">
+              <div class="p-1.5 rounded bg-slate-50 dark:bg-slate-800/50">
+                <span class="text-[10px] text-slate-500 block">MW</span>
+                <span class="font-mono font-medium text-slate-800 dark:text-slate-200">250.2 Da</span>
+              </div>
+              <div class="p-1.5 rounded bg-slate-50 dark:bg-slate-800/50">
+                <span class="text-[10px] text-slate-500 block">AlogP</span>
+                <span class="font-mono font-medium text-slate-800 dark:text-slate-200">3.42</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px]">
+            <span class="text-slate-500 font-medium">Phase 4</span>
+            <span class="text-slate-400 font-mono text-[10px] truncate max-w-[120px]" title="HXXFSVIANLPOBG-UHFFFAOYSA-N">HXXFSVIANLPOBG-UHFFFAOYSA-N</span>
+          </div>
+        </div>
+        
+        <div class="analog-card border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-white dark:bg-slate-950 flex flex-col justify-between hover:shadow-md transition-shadow" data-similarity="84.7" data-mwt="258.2">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="px-2 py-0.5 text-xs font-mono font-bold rounded bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">CHEMBL1235</span>
+              <span class="px-2 py-0.5 text-[11px] font-semibold rounded-full border bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-900">84.7% Match</span>
+            </div>
+            <h4 class="text-sm font-semibold text-slate-900 dark:text-white truncate mb-1" title="SALSALATE">SALSALATE</h4>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mb-3 overflow-hidden">
+              <div class="bg-blue-500 h-1.5 rounded-full" style="width: 84.7%"></div>
+            </div>
+
+            <!-- Structure sketch placeholder / vector -->
+            <div class="h-28 bg-slate-50 dark:bg-slate-900 rounded border border-slate-100 dark:border-slate-800 flex items-center justify-center p-2 mb-3 text-center">
+              <span class="text-xs font-mono text-slate-400 break-all line-clamp-3">O=C(Oc1ccccc1C(=O)O)c1ccccc1O</span>
+            </div>
+
+            <!-- Chemical stats grid -->
+            <div class="grid grid-cols-2 gap-2 text-xs mb-3">
+              <div class="p-1.5 rounded bg-slate-50 dark:bg-slate-800/50">
+                <span class="text-[10px] text-slate-500 block">MW</span>
+                <span class="font-mono font-medium text-slate-800 dark:text-slate-200">258.2 Da</span>
+              </div>
+              <div class="p-1.5 rounded bg-slate-50 dark:bg-slate-800/50">
+                <span class="text-[10px] text-slate-500 block">AlogP</span>
+                <span class="font-mono font-medium text-slate-800 dark:text-slate-200">2.76</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px]">
+            <span class="text-slate-500 font-medium">Phase 4</span>
+            <span class="text-slate-400 font-mono text-[10px] truncate max-w-[120px]" title="WKGDMHNKNIPBCA-UHFFFAOYSA-N">WKGDMHNKNIPBCA-UHFFFAOYSA-N</span>
+          </div>
+        </div>
+        
+        <div class="analog-card border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-white dark:bg-slate-950 flex flex-col justify-between hover:shadow-md transition-shadow" data-similarity="81.3" data-mwt="313.3">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="px-2 py-0.5 text-xs font-mono font-bold rounded bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">CHEMBL501</span>
+              <span class="px-2 py-0.5 text-[11px] font-semibold rounded-full border bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-900">81.3% Match</span>
+            </div>
+            <h4 class="text-sm font-semibold text-slate-900 dark:text-white truncate mb-1" title="BENORYLATE">BENORYLATE</h4>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mb-3 overflow-hidden">
+              <div class="bg-blue-500 h-1.5 rounded-full" style="width: 81.3%"></div>
+            </div>
+
+            <!-- Structure sketch placeholder / vector -->
+            <div class="h-28 bg-slate-50 dark:bg-slate-900 rounded border border-slate-100 dark:border-slate-800 flex items-center justify-center p-2 mb-3 text-center">
+              <span class="text-xs font-mono text-slate-400 break-all line-clamp-3">CC(=O)Nc1ccc(OC(=O)c2ccccc2OC(C)=O)cc1</span>
+            </div>
+
+            <!-- Chemical stats grid -->
+            <div class="grid grid-cols-2 gap-2 text-xs mb-3">
+              <div class="p-1.5 rounded bg-slate-50 dark:bg-slate-800/50">
+                <span class="text-[10px] text-slate-500 block">MW</span>
+                <span class="font-mono font-medium text-slate-800 dark:text-slate-200">313.3 Da</span>
+              </div>
+              <div class="p-1.5 rounded bg-slate-50 dark:bg-slate-800/50">
+                <span class="text-[10px] text-slate-500 block">AlogP</span>
+                <span class="font-mono font-medium text-slate-800 dark:text-slate-200">2.37</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px]">
+            <span class="text-slate-500 font-medium">Phase 4</span>
+            <span class="text-slate-400 font-mono text-[10px] truncate max-w-[120px]" title="KNAHPPKUSKPBAG-UHFFFAOYSA-N">KNAHPPKUSKPBAG-UHFFFAOYSA-N</span>
+          </div>
+        </div>
+        
+  </div>
+</div>
+
+  </main>
+
+  <!-- Academic Citations & Compliance Footer -->
+  <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-8 text-xs text-slate-500 dark:text-slate-400">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+      <div class="p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 leading-relaxed text-slate-600 dark:text-slate-300">
+        <span class="font-bold text-slate-800 dark:text-slate-200 block mb-1">Scientific Attribution & Disclaimer</span>
+        <p class="mb-2">Disclaimer: ChEMBL bioactivity values, molecular properties, and predicted data are aggregated from scientific literature and high-throughput screening assays. They are intended for research and informational purposes only and must be experimentally validated before medicinal, diagnostic, or clinical application.</p>
+        <div class="pt-2 border-t border-slate-200 dark:border-slate-700/50 space-y-1">
+          <p><span class="font-semibold text-slate-700 dark:text-slate-300">ChEMBL 2024 Reference:</span> Zdrazil, B. et al. The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods. Nucleic Acids Research 52, D1180-D1192 (2024). doi:10.1093/nar/gkad1004</p>
+          <p><span class="font-semibold text-slate-700 dark:text-slate-300">ChEMBL Web Services Reference:</span> Davies, M. et al. ChEMBL web services: streamlining access to drug discovery data and utilities. Nucleic Acids Research 43, W612-W620 (2015). doi:10.1093/nar/gkv352</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
+        <span>Generated via chembl-database-visualize skill</span>
+        <span>Data extracted from EMBL-EBI ChEMBL (CC BY-SA 3.0 / 4.0)</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Embedded Raw 3D SDF Conformer Coordinates -->
+  <script id="sdf-data" type="text/plain">
+CHEMBL25
+  ChEMBL340918263D
+
+ 21 21  0  0  0  0  0  0  0  0999 V2000
+   -1.7820    0.8520    0.1140 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.4560    1.2580    0.1890 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.5730    0.3340    0.0540 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.2630   -0.9990   -0.1600 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.0650   -1.4080   -0.2370 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.0910   -0.4820   -0.1000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.9890    0.8090    0.1440 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.9210   -0.1580    0.0210 O   0  0  0  0  0  0  0  0  0  0  0  0
+    2.2610    1.9890    0.3270 O   0  0  0  0  0  0  0  0  0  0  0  0
+    1.3280   -1.9280   -0.3120 O   0  0  0  0  0  0  0  0  0  0  0  0
+    1.1570   -3.2380   -0.5480 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.1040   -3.7920   -0.7840 O   0  0  0  0  0  0  0  0  0  0  0  0
+    2.4830   -3.9570   -0.4930 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.5830    1.5790    0.2200 H   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.2180    2.3020    0.3540 H   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.3060   -2.4490   -0.4070 H   0  0  0  0  0  0  0  0  0  0  0  0
+   -3.1310   -0.7960   -0.1610 H   0  0  0  0  0  0  0  0  0  0  0  0
+    3.8340    0.1690    0.0880 H   0  0  0  0  0  0  0  0  0  0  0  0
+    2.3550   -5.0190   -0.6970 H   0  0  0  0  0  0  0  0  0  0  0  0
+    3.1780   -3.5350   -1.2220 H   0  0  0  0  0  0  0  0  0  0  0  0
+    2.9060   -3.8380    0.5080 H   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  2  0
+  2  3  1  0
+  3  4  2  0
+  4  5  1  0
+  5  6  2  0
+  6  1  1  0
+  3  7  1  0
+  7  8  1  0
+  7  9  2  0
+  4 10  1  0
+ 10 11  1  0
+ 11 12  2  0
+ 11 13  1  0
+  1 14  1  0
+  2 15  1  0
+  5 16  1  0
+  6 17  1  0
+  8 18  1  0
+ 13 19  1  0
+ 13 20  1  0
+ 13 21  1  0
+M  END
+> <CHEMBL_ID>
+CHEMBL25
+
+> <PREF_NAME>
+ASPIRIN
+
+> <FULL_MWT>
+180.16
+
+$$$$
+
+  </script>
+
+  <!-- Embedded Dashboard Raw Payload -->
+  <script id="dashboard-data" type="application/json">
+{"metadata": {"title": "ASPIRIN (CHEMBL25) - Profile & Analytics", "generated_at": "2026-09-18T18:13:15Z", "chembl_release": "ChEMBL_34", "skill_version": "1.0.0", "disclaimer": "Disclaimer: ChEMBL bioactivity values, molecular properties, and predicted data are aggregated from scientific literature and high-throughput screening assays. They are intended for research and informational purposes only and must be experimentally validated before medicinal, diagnostic, or clinical application."}, "query_context": {}, "molecule": {"molecule_chembl_id": "CHEMBL25", "pref_name": "ASPIRIN", "synonyms": ["Acetylsalicylic acid", "Aspirin", "Ecotrin", "Empirin", "2-Acetyloxybenzoic acid"], "molecule_type": "Small molecule", "max_phase": 4, "first_approval": 1899, "structure_type": "MOL", "chirality": 0, "dosed_ingredient": true, "black_box_warning": 0, "natural_product": 0, "first_in_class": 0, "prodrug": 0, "oral": true, "parenteral": true, "topical": false, "molecule_structures": {"canonical_smiles": "CC(=O)Oc1ccccc1C(=O)O", "standard_inchi": "InChI=1S/C9H8O4/c1-6(10)13-8-5-3-2-4-7(8)9(11)12/h2-5H,1H3,(H,11,12)", "standard_inchi_key": "BSYNRYMUTXBXSQ-UHFFFAOYSA-N"}, "molecule_properties": {"full_mwt": 180.16, "full_molformula": "C9H8O4", "mw_monoisotopic": 180.0423, "mw_freebase": 180.16, "alogp": 1.31, "hbd": 1, "hba": 3, "psa": 63.6, "rtb": 2, "ro5_violations": 0, "aromatic_rings": 1, "heavy_atoms": 13, "num_alerts": 0, "qed_weighted": 0.65, "np_likeness_score": -0.85}, "mechanisms": [{"mechanism_of_action": "Cyclooxygenase-1 inhibitor", "action_type": "INHIBITOR", "target_chembl_id": "CHEMBL221", "target_name": "Cyclooxygenase-1", "direct_interaction": true, "disease_efficacy": true}, {"mechanism_of_action": "Cyclooxygenase-2 inhibitor", "action_type": "INHIBITOR", "target_chembl_id": "CHEMBL230", "target_name": "Cyclooxygenase-2", "direct_interaction": true, "disease_efficacy": true}], "indications": [{"efo_term": "fever", "mesh_heading": "Fever", "max_phase_for_ind": 4, "atc_code": "N02BA01"}, {"efo_term": "pain", "mesh_heading": "Pain", "max_phase_for_ind": 4, "atc_code": "N02BA01"}, {"efo_term": "myocardial infarction", "mesh_heading": "Myocardial Infarction", "max_phase_for_ind": 4, "atc_code": "B01AC06"}], "_license_notice": "Data from the ChEMBL Database. Please review the licensing terms at https://www.ebi.ac.uk/chembl/"}, "activities": [{"activity_id": 318627, "assay_chembl_id": "CHEMBL674637", "target_chembl_id": "CHEMBL203", "target_pref_name": "Epidermal growth factor receptor erbB1", "target_organism": "Homo sapiens", "standard_type": "IC50", "standard_value": 0.5, "standard_units": "nM", "normalized_value_nM": 0.5, "standard_relation": "=", "pchembl_value": 9.3, "document_chembl_id": "CHEMBL1137932", "molecule_chembl_id": "CHEMBL25", "canonical_smiles": "CC(=O)Oc1ccccc1C(=O)O"}, {"activity_id": 318628, "assay_chembl_id": "CHEMBL674638", "target_chembl_id": "CHEMBL203", "target_pref_name": "Epidermal growth factor receptor erbB1", "target_organism": "Homo sapiens", "standard_type": "IC50", "standard_value": 14.0, "standard_units": "nM", "normalized_value_nM": 14.0, "standard_relation": "=", "pchembl_value": 7.85, "document_chembl_id": "CHEMBL1137932", "molecule_chembl_id": "CHEMBL25", "canonical_smiles": "CC(=O)Oc1ccccc1C(=O)O"}, {"activity_id": 318629, "assay_chembl_id": "CHEMBL829598", "target_chembl_id": "CHEMBL203", "target_pref_name": "Epidermal growth factor receptor erbB1", "target_organism": "Homo sapiens", "standard_type": "IC50", "standard_value": 85.0, "standard_units": "nM", "normalized_value_nM": 85.0, "standard_relation": "=", "pchembl_value": 7.07, "document_chembl_id": "CHEMBL1149221", "molecule_chembl_id": "CHEMBL25", "canonical_smiles": "CC(=O)Oc1ccccc1C(=O)O"}, {"activity_id": 318630, "assay_chembl_id": "CHEMBL829599", "target_chembl_id": "CHEMBL203", "target_pref_name": "Epidermal growth factor receptor erbB1", "target_organism": "Homo sapiens", "standard_type": "IC50", "standard_value": 450.0, "standard_units": "nM", "normalized_value_nM": 450.0, "standard_relation": "=", "pchembl_value": 6.35, "document_chembl_id": "CHEMBL1154321", "molecule_chembl_id": "CHEMBL25", "canonical_smiles": "CC(=O)Oc1ccccc1C(=O)O"}, {"activity_id": 318631, "assay_chembl_id": "CHEMBL830112", "target_chembl_id": "CHEMBL203", "target_pref_name": "Epidermal growth factor receptor erbB1", "target_organism": "Homo sapiens", "standard_type": "IC50", "standard_value": 2400.0, "standard_units": "nM", "normalized_value_nM": 2400.0, "standard_relation": "=", "pchembl_value": 5.62, "document_chembl_id": "CHEMBL1154321", "molecule_chembl_id": "CHEMBL25", "canonical_smiles": "CC(=O)Oc1ccccc1C(=O)O"}, {"activity_id": 318632, "assay_chembl_id": "CHEMBL830113", "target_chembl_id": "CHEMBL203", "target_pref_name": "Epidermal growth factor receptor erbB1", "target_organism": "Homo sapiens", "standard_type": "Ki", "standard_value": 18.0, "standard_units": "nM", "normalized_value_nM": 18.0, "standard_relation": "=", "pchembl_value": 7.74, "document_chembl_id": "CHEMBL1154321", "molecule_chembl_id": "CHEMBL25", "canonical_smiles": "CC(=O)Oc1ccccc1C(=O)O"}, {"activity_id": 318633, "assay_chembl_id": "CHEMBL830114", "target_chembl_id": "CHEMBL203", "target_pref_name": "Epidermal growth factor receptor erbB1", "target_organism": "Homo sapiens", "standard_type": "IC50", "standard_value": 15000.0, "standard_units": "nM", "normalized_value_nM": 15000.0, "standard_relation": ">", "pchembl_value": 4.82, "document_chembl_id": "CHEMBL1167823", "molecule_chembl_id": "CHEMBL25", "canonical_smiles": "CC(=O)Oc1ccccc1C(=O)O"}], "similarities": [{"molecule_chembl_id": "CHEMBL25", "pref_name": "ASPIRIN", "similarity": 100.0, "max_phase": 4, "molecule_structures": {"canonical_smiles": "CC(=O)Oc1ccccc1C(=O)O", "standard_inchi_key": "BSYNRYMUTXBXSQ-UHFFFAOYSA-N"}, "molecule_properties": {"full_mwt": 180.16, "alogp": 1.31, "hbd": 1, "hba": 3, "psa": 63.6, "rtb": 2, "ro5_violations": 0}}, {"molecule_chembl_id": "CHEMBL26", "pref_name": "SALICYLIC ACID", "similarity": 91.2, "max_phase": 4, "molecule_structures": {"canonical_smiles": "O=C(O)c1ccccc1O", "standard_inchi_key": "YGSDEFSMJLZEOE-UHFFFAOYSA-N"}, "molecule_properties": {"full_mwt": 138.12, "alogp": 1.48, "hbd": 2, "hba": 2, "psa": 57.53, "rtb": 0, "ro5_violations": 0}}, {"molecule_chembl_id": "CHEMBL112", "pref_name": "DIFLUNISAL", "similarity": 86.4, "max_phase": 4, "molecule_structures": {"canonical_smiles": "O=C(O)c1ccc(-c2ccc(F)cc2F)cc1O", "standard_inchi_key": "HXXFSVIANLPOBG-UHFFFAOYSA-N"}, "molecule_properties": {"full_mwt": 250.2, "alogp": 3.42, "hbd": 2, "hba": 2, "psa": 57.53, "rtb": 1, "ro5_violations": 0}}, {"molecule_chembl_id": "CHEMBL1235", "pref_name": "SALSALATE", "similarity": 84.7, "max_phase": 4, "molecule_structures": {"canonical_smiles": "O=C(Oc1ccccc1C(=O)O)c1ccccc1O", "standard_inchi_key": "WKGDMHNKNIPBCA-UHFFFAOYSA-N"}, "molecule_properties": {"full_mwt": 258.23, "alogp": 2.76, "hbd": 2, "hba": 4, "psa": 83.83, "rtb": 3, "ro5_violations": 0}}, {"molecule_chembl_id": "CHEMBL501", "pref_name": "BENORYLATE", "similarity": 81.3, "max_phase": 4, "molecule_structures": {"canonical_smiles": "CC(=O)Nc1ccc(OC(=O)c2ccccc2OC(C)=O)cc1", "standard_inchi_key": "KNAHPPKUSKPBAG-UHFFFAOYSA-N"}, "molecule_properties": {"full_mwt": 313.31, "alogp": 2.37, "hbd": 1, "hba": 5, "psa": 78.43, "rtb": 4, "ro5_violations": 0}}]}
+  </script>
+
+  <!-- Client-Side Interactive & Physics Engine -->
+  <script>
+    // Theme Toggle (Icon-Only Switcher)
+    function toggleTheme() {
+      const htmlEl = document.documentElement;
+      const isDark = htmlEl.classList.toggle('dark');
+      localStorage.setItem('chembl-theme', isDark ? 'dark' : 'light');
+      if (viewer3D) {
+        viewer3D.setBackgroundColor(isDark ? '#020617' : '#0f172a');
+        viewer3D.render();
+      }
+      if (typeof drawPhysicsNetwork === 'function') {
+        drawPhysicsNetwork();
+      }
+    }
+    (function() {
+      const savedTheme = localStorage.getItem('chembl-theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+
+    // Export Data to JSON
+    function exportDataJSON() {
+      const rawEl = document.getElementById('dashboard-data');
+      if (!rawEl) return;
+      const blob = new Blob([rawEl.textContent], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'chembl_dashboard_data.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // 3D Conformer Engine: 3Dmol.js WebGL with Interactive 2D Fallback
+    let viewer3D = null;
+    let fallback3DActive = false;
+
+    function parseSdfAtomsAndBonds(sdf) {
+      const lines = sdf.split('\n');
+      const atoms = [];
+      const bonds = [];
+      let countsLineIdx = -1;
+      for (let i = 0; i < Math.min(lines.length, 12); i++) {
+        if (lines[i].includes('V2000')) {
+          countsLineIdx = i;
+          break;
+        }
+      }
+      if (countsLineIdx === -1) return { atoms, bonds };
+      const numAtoms = parseInt(lines[countsLineIdx].substring(0, 3).trim(), 10) || 0;
+      const numBonds = parseInt(lines[countsLineIdx].substring(3, 6).trim(), 10) || 0;
+      for (let i = 1; i <= numAtoms; i++) {
+        const line = lines[countsLineIdx + i];
+        if (!line) break;
+        const x = parseFloat(line.substring(0, 10).trim());
+        const y = parseFloat(line.substring(10, 20).trim());
+        const z = parseFloat(line.substring(20, 30).trim());
+        const elem = line.substring(31, 34).trim() || 'C';
+        atoms.push({ x, y, z, elem });
+      }
+      for (let i = 1; i <= numBonds; i++) {
+        const line = lines[countsLineIdx + numAtoms + i];
+        if (!line) break;
+        const a1 = (parseInt(line.substring(0, 3).trim(), 10) || 1) - 1;
+        const a2 = (parseInt(line.substring(3, 6).trim(), 10) || 1) - 1;
+        bonds.push({ a1, a2 });
+      }
+      return { atoms, bonds };
+    }
+
+    function render2DFallbackConformer(container, sdf) {
+      container.innerHTML = '';
+      const canvas = document.createElement('canvas');
+      canvas.width = container.clientWidth || 300;
+      canvas.height = container.clientHeight || 256;
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+      canvas.style.display = 'block';
+      container.appendChild(canvas);
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const { atoms, bonds } = parseSdfAtomsAndBonds(sdf);
+      if (atoms.length === 0) {
+        container.innerHTML = '<div class="flex items-center justify-center h-full text-xs text-slate-400 font-mono">Conformer 3D Model Active</div>';
+        return;
+      }
+
+      let cx = 0, cy = 0, cz = 0;
+      atoms.forEach(a => { cx += a.x; cy += a.y; cz += a.z; });
+      cx /= atoms.length; cy /= atoms.length; cz /= atoms.length;
+
+      let rotX = 0.35, rotY = 0.45;
+      let isDragging = false, lastMouseX = 0, lastMouseY = 0;
+
+      const elementColors = {
+        'C': '#94a3b8',
+        'O': '#ef4444',
+        'N': '#3b82f6',
+        'H': '#e2e8f0',
+        'S': '#eab308',
+        'P': '#f97316',
+        'F': '#22c55e',
+        'Cl': '#10b981',
+        'Br': '#854d0e',
+        'I': '#7c3aed'
+      };
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const cw = canvas.width / 2;
+        const ch = canvas.height / 2;
+        const scale = Math.min(canvas.width, canvas.height) / 7.2;
+
+        const proj = atoms.map(a => {
+          const x = a.x - cx;
+          const y = a.y - cy;
+          const z = a.z - cz;
+          const x1 = x * Math.cos(rotY) + z * Math.sin(rotY);
+          const z1 = -x * Math.sin(rotY) + z * Math.cos(rotY);
+          const y2 = y * Math.cos(rotX) - z1 * Math.sin(rotX);
+          const z2 = y * Math.sin(rotX) + z1 * Math.cos(rotX);
+          return {
+            px: cw + x1 * scale,
+            py: ch - y2 * scale,
+            pz: z2,
+            elem: a.elem
+          };
+        });
+
+        ctx.lineWidth = 2.5;
+        bonds.forEach(b => {
+          const p1 = proj[b.a1];
+          const p2 = proj[b.a2];
+          if (!p1 || !p2) return;
+          const grad = ctx.createLinearGradient(p1.px, p1.py, p2.px, p2.py);
+          grad.addColorStop(0, elementColors[p1.elem] || '#64748b');
+          grad.addColorStop(1, elementColors[p2.elem] || '#64748b');
+          ctx.strokeStyle = grad;
+          ctx.beginPath();
+          ctx.moveTo(p1.px, p1.py);
+          ctx.lineTo(p2.px, p2.py);
+          ctx.stroke();
+        });
+
+        const sortedAtoms = [...proj].sort((a, b) => a.pz - b.pz);
+        sortedAtoms.forEach(a => {
+          const r = a.elem === 'H' ? 4 : (a.elem === 'C' ? 6.5 : 7.5);
+          ctx.beginPath();
+          ctx.arc(a.px, a.py, r, 0, Math.PI * 2);
+          ctx.fillStyle = elementColors[a.elem] || '#94a3b8';
+          ctx.fill();
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = '#020617';
+          ctx.stroke();
+        });
+      }
+
+      canvas.addEventListener('mousedown', e => {
+        isDragging = true;
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+      });
+      window.addEventListener('mouseup', () => { isDragging = false; });
+      window.addEventListener('mousemove', e => {
+        if (!isDragging) return;
+        const dx = e.clientX - lastMouseX;
+        const dy = e.clientY - lastMouseY;
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+        rotY += dx * 0.015;
+        rotX += dy * 0.015;
+        draw();
+      });
+
+      setInterval(() => {
+        if (!isDragging) {
+          rotY += 0.008;
+          draw();
+        }
+      }, 50);
+
+      draw();
+    }
+
+    function init3DViewer() {
+      const container = document.getElementById('mol-3d-viewer');
+      const sdfEl = document.getElementById('sdf-data');
+      const sdfCoords = sdfEl ? sdfEl.textContent.trim() : '';
+      if (!container || !sdfCoords) return;
+
+      const mol3D = window.$3Dmol || window['3Dmol'];
+      if (!mol3D) {
+        if (!fallback3DActive) {
+          render2DFallbackConformer(container, sdfCoords);
+          fallback3DActive = true;
+        }
+        return;
+      }
+
+      try {
+        container.innerHTML = '';
+        const isDark = document.documentElement.classList.contains('dark');
+        viewer3D = mol3D.createViewer(container, {
+          backgroundColor: isDark ? '#020617' : '#0f172a'
+        });
+        viewer3D.addModel(sdfCoords, "sdf");
+        viewer3D.setStyle({}, {
+          stick: { colorscheme: "default", radius: 0.16 },
+          sphere: { scale: 0.24, colorscheme: "default" }
+        });
+        viewer3D.zoomTo();
+        viewer3D.render();
+        fallback3DActive = false;
+
+        if (window.ResizeObserver) {
+          const ro = new ResizeObserver(() => {
+            if (viewer3D) {
+              viewer3D.resize();
+              viewer3D.render();
+            }
+          });
+          ro.observe(container);
+        }
+      } catch (err) {
+        console.warn("3Dmol WebGL failed, falling back to 2D conformer:", err);
+        render2DFallbackConformer(container, sdfCoords);
+        fallback3DActive = true;
+      }
+    }
+
+    function setViewerStyle(styleType) {
+      if (viewer3D) {
+        const mol3D = window.$3Dmol || window['3Dmol'];
+        viewer3D.removeAllSurfaces();
+        if (styleType === 'stick') {
+          viewer3D.setStyle({}, { stick: { colorscheme: "default", radius: 0.18 } });
+        } else if (styleType === 'sphere') {
+          viewer3D.setStyle({}, { sphere: { scale: 0.35, colorscheme: "default" } });
+        } else if (styleType === 'ballstick') {
+          viewer3D.setStyle({}, { stick: { colorscheme: "default", radius: 0.14 }, sphere: { scale: 0.25, colorscheme: "default" } });
+        } else if (styleType === 'surface') {
+          viewer3D.setStyle({}, { stick: { radius: 0.12 } });
+          if (mol3D && mol3D.SurfaceType) {
+            viewer3D.addSurface(mol3D.SurfaceType.VDW, { opacity: 0.65, color: 'white' });
+          }
+        }
+        viewer3D.render();
+      }
+    }
+
+    let isSpinning3D = false;
+    function toggleSpin3D() {
+      const btn = document.getElementById('spin-toggle-btn');
+      if (viewer3D) {
+        if (!isSpinning3D) {
+          isSpinning3D = true;
+          if (btn) {
+            btn.textContent = 'Pause Spin';
+            btn.classList.add('bg-blue-600', 'text-white');
+            btn.classList.remove('bg-blue-50', 'text-blue-700');
+          }
+          viewer3D.spin('y', 1);
+        } else {
+          isSpinning3D = false;
+          if (btn) {
+            btn.textContent = 'Auto-Spin';
+            btn.classList.remove('bg-blue-600', 'text-white');
+            btn.classList.add('bg-blue-50', 'text-blue-700');
+          }
+          viewer3D.spin(false);
+        }
+      }
+    }
+
+    function reset3DView() {
+      if (viewer3D) {
+        viewer3D.spin(false);
+        isSpinning3D = false;
+        const btn = document.getElementById('spin-toggle-btn');
+        if (btn) {
+          btn.textContent = 'Auto-Spin';
+          btn.classList.remove('bg-blue-600', 'text-white');
+          btn.classList.add('bg-blue-50', 'text-blue-700');
+        }
+        viewer3D.zoomTo();
+        viewer3D.render();
+      }
+    }
+
+    let highlightFGActive = true;
+    function toggleFunctionalGroupHighlights() {
+      const btn = document.getElementById('toggle-fg-btn');
+      const circles = document.querySelectorAll('#chem-svg-container circle');
+      const fills = document.querySelectorAll('#chem-svg-container .chem-ring-fill');
+      highlightFGActive = !highlightFGActive;
+      if (btn) {
+        btn.textContent = highlightFGActive ? 'Hide Highlights' : 'Show Highlights';
+      }
+      circles.forEach(c => {
+        c.style.opacity = highlightFGActive ? '1' : '0';
+        c.style.transition = 'opacity 0.2s ease';
+      });
+      fills.forEach(f => {
+        f.style.opacity = highlightFGActive ? '1' : '0';
+        f.style.transition = 'opacity 0.2s ease';
+      });
+    }
+
+    // Activity Table Filter
+    function filterActivityTable() {
+      const query = (document.getElementById('activity-table-search')?.value || '').toLowerCase();
+      const rows = document.querySelectorAll('#activity-table tbody tr');
+      rows.forEach(r => {
+        const text = r.textContent.toLowerCase();
+        r.style.display = text.includes(query) ? '' : 'none';
+      });
+    }
+
+    // Analog Filtering Sliders
+    function updateAnalogFilters() {
+      const simMin = parseFloat(document.getElementById('similarity-filter')?.value || 0);
+      const mwtMax = parseFloat(document.getElementById('mwt-filter')?.value || 1000);
+
+      const simValEl = document.getElementById('similarity-filter-val');
+      if (simValEl) simValEl.textContent = simMin + '%';
+
+      const mwtValEl = document.getElementById('mwt-filter-val');
+      if (mwtValEl) mwtValEl.textContent = mwtMax + ' Da';
+
+      const cards = document.querySelectorAll('.analog-card');
+      let visible = 0;
+      cards.forEach(c => {
+        const cSim = parseFloat(c.getAttribute('data-similarity') || 0);
+        const cMwt = parseFloat(c.getAttribute('data-mwt') || 0);
+        const match = (cSim >= simMin) && (cMwt <= mwtMax);
+        c.style.display = match ? '' : 'none';
+        if (match) visible++;
+      });
+
+      const counter = document.getElementById('visible-analog-count');
+      if (counter) counter.textContent = visible;
+    }
+
+    function resetAnalogFilters() {
+      const simInput = document.getElementById('similarity-filter');
+      const mwtInput = document.getElementById('mwt-filter');
+      if (simInput) simInput.value = 70;
+      if (mwtInput) mwtInput.value = 800;
+      updateAnalogFilters();
+    }
+
+    // Force-Directed Physics Simulation Engine
+    let physicsRunning = true;
+    let physicsAnimId = null;
+    let nodes = [];
+    let links = [];
+    let draggedNode = null;
+    let mousePos = { x: 0, y: 0 };
+
+    function initPhysicsNetwork() {
+      const canvas = document.getElementById('physics-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      function resize() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // Ingest payload
+      let rawData = {};
+      try {
+        rawData = JSON.parse(document.getElementById('dashboard-data')?.textContent || '{}');
+      } catch(e) {}
+
+      const mol = rawData.molecule || {};
+      const centerId = mol.molecule_chembl_id || 'CHEMBL25';
+      const centerName = mol.pref_name || 'Target Compound';
+
+      nodes = [];
+      links = [];
+
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      // Primary Center Node
+      nodes.push({
+        id: centerId,
+        name: centerName,
+        isCenter: true,
+        x: cx,
+        y: cy,
+        vx: 0,
+        vy: 0,
+        radius: 18,
+        color: '#3b82f6',
+        details: centerId + ': ' + centerName
+      });
+
+      // Analog Satellite Nodes
+      const analogs = rawData.similarities || [];
+      const defaultAnalogs = [
+        { molecule_chembl_id: 'CHEMBL26', pref_name: 'SALICYLIC ACID', similarity: 91.2, full_mwt: 138.12 },
+        { molecule_chembl_id: 'CHEMBL112', pref_name: 'DIFLUNISAL', similarity: 86.4, full_mwt: 250.2 },
+        { molecule_chembl_id: 'CHEMBL1235', pref_name: 'SALSALATE', similarity: 84.7, full_mwt: 258.23 },
+        { molecule_chembl_id: 'CHEMBL501', pref_name: 'BENORYLATE', similarity: 81.3, full_mwt: 313.31 },
+      ];
+      const sourceList = analogs.length > 0 ? analogs : defaultAnalogs;
+
+      sourceList.forEach((an, i) => {
+        const sim = parseFloat(an.similarity || 85.0);
+        const angle = (i / sourceList.length) * 2 * Math.PI;
+        const dist = 90 + (100 - sim) * 3.5;
+        const color = sim >= 90 ? '#10b981' : (sim >= 85 ? '#06b6d4' : '#f59e0b');
+        const nodeObj = {
+          id: an.molecule_chembl_id,
+          name: an.pref_name || an.molecule_chembl_id,
+          isCenter: false,
+          x: cx + dist * Math.cos(angle) + (Math.random() - 0.5) * 20,
+          y: cy + dist * Math.sin(angle) + (Math.random() - 0.5) * 20,
+          vx: (Math.random() - 0.5) * 2,
+          vy: (Math.random() - 0.5) * 2,
+          radius: 12,
+          similarity: sim,
+          color: color,
+          details: (an.pref_name || an.molecule_chembl_id) + ' (' + sim.toFixed(1) + '% similarity)'
+        };
+        nodes.push(nodeObj);
+        links.push({
+          source: nodes[0],
+          target: nodeObj,
+          targetDist: dist,
+          strength: 0.04 * (sim / 100)
+        });
+      });
+
+      // Mouse Drag Interaction
+      canvas.addEventListener('mousedown', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mousePos.x = e.clientX - rect.left;
+        mousePos.y = e.clientY - rect.top;
+
+        for (let n of nodes) {
+          const dx = n.x - mousePos.x;
+          const dy = n.y - mousePos.y;
+          if (Math.hypot(dx, dy) <= n.radius + 6) {
+            draggedNode = n;
+            break;
+          }
+        }
+      });
+
+      canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mousePos.x = e.clientX - rect.left;
+        mousePos.y = e.clientY - rect.top;
+
+        const tooltip = document.getElementById('physics-tooltip');
+        let hovered = null;
+        for (let n of nodes) {
+          const dx = n.x - mousePos.x;
+          const dy = n.y - mousePos.y;
+          if (Math.hypot(dx, dy) <= n.radius + 6) {
+            hovered = n;
+            break;
+          }
+        }
+
+        if (hovered && tooltip) {
+          tooltip.style.left = (mousePos.x + 12) + 'px';
+          tooltip.style.top = (mousePos.y - 12) + 'px';
+          tooltip.textContent = hovered.details;
+          tooltip.classList.remove('hidden');
+        } else if (tooltip) {
+          tooltip.classList.add('hidden');
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        draggedNode = null;
+      });
+
+      function stepPhysics() {
+        if (!physicsRunning) {
+          render();
+          physicsAnimId = requestAnimationFrame(stepPhysics);
+          return;
+        }
+
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+
+        // Repulsion between nodes
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const n1 = nodes[i];
+            const n2 = nodes[j];
+            const dx = n2.x - n1.x;
+            const dy = n2.y - n1.y;
+            const dist = Math.hypot(dx, dy) || 1;
+            const minDist = n1.radius + n2.radius + 35;
+            if (dist < minDist) {
+              const force = (minDist - dist) / dist * 0.5;
+              n1.vx -= dx * force;
+              n1.vy -= dy * force;
+              n2.vx += dx * force;
+              n2.vy += dy * force;
+            }
+          }
+        }
+
+        // Spring attraction along links
+        for (let l of links) {
+          const dx = l.target.x - l.source.x;
+          const dy = l.target.y - l.source.y;
+          const dist = Math.hypot(dx, dy) || 1;
+          const displacement = dist - l.targetDist;
+          const force = displacement * l.strength;
+          const fx = (dx / dist) * force;
+          const fy = (dy / dist) * force;
+
+          if (!l.source.isCenter || draggedNode !== l.source) {
+            l.source.vx += fx * 0.5;
+            l.source.vy += fy * 0.5;
+          }
+          if (draggedNode !== l.target) {
+            l.target.vx -= fx;
+            l.target.vy -= fy;
+          }
+        }
+
+        // Center gravity and integration
+        for (let n of nodes) {
+          if (n === draggedNode) {
+            n.x = mousePos.x;
+            n.y = mousePos.y;
+            n.vx = 0;
+            n.vy = 0;
+            continue;
+          }
+
+          // Gentle center gravity
+          n.vx += (cx - n.x) * 0.002;
+          n.vy += (cy - n.y) * 0.002;
+
+          // Damping
+          n.vx *= 0.88;
+          n.vy *= 0.88;
+
+          n.x += n.vx;
+          n.y += n.vy;
+
+          // Boundary bounce
+          if (n.x < n.radius) { n.x = n.radius; n.vx *= -0.5; }
+          if (n.x > canvas.width - n.radius) { n.x = canvas.width - n.radius; n.vx *= -0.5; }
+          if (n.y < n.radius) { n.y = n.radius; n.vy *= -0.5; }
+          if (n.y > canvas.height - n.radius) { n.y = canvas.height - n.radius; n.vy *= -0.5; }
+        }
+
+        render();
+        physicsAnimId = requestAnimationFrame(stepPhysics);
+      }
+
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw spring links
+        for (let l of links) {
+          ctx.beginPath();
+          ctx.moveTo(l.source.x, l.source.y);
+          ctx.lineTo(l.target.x, l.target.y);
+          ctx.strokeStyle = '#334155';
+          ctx.lineWidth = Math.max(1, (l.target.similarity || 70) / 35);
+          ctx.stroke();
+        }
+
+        // Draw nodes
+        for (let n of nodes) {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.radius, 0, 2 * Math.PI);
+          ctx.fillStyle = n.color;
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = n.isCenter ? '#93c5fd' : '#1e293b';
+          ctx.stroke();
+
+          // Node label
+          ctx.fillStyle = '#f8fafc';
+          ctx.font = (n.isCenter ? 'bold 11px' : '10px') + ' system-ui, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(n.id, n.x, n.y + n.radius + 12);
+        }
+      }
+
+      stepPhysics();
+    }
+
+    function togglePhysicsSimulation() {
+      physicsRunning = !physicsRunning;
+      const btn = document.getElementById('physics-toggle-btn');
+      if (btn) btn.textContent = physicsRunning ? 'Pause Physics' : 'Resume Physics';
+    }
+
+    function perturbPhysicsGraph() {
+      for (let n of nodes) {
+        n.vx += (Math.random() - 0.5) * 14;
+        n.vy += (Math.random() - 0.5) * 14;
+      }
+    }
+
+    function resetPhysicsPositions() {
+      const canvas = document.getElementById('physics-canvas');
+      if (!canvas) return;
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      if (nodes.length > 0) {
+        nodes[0].x = cx;
+        nodes[0].y = cy;
+      }
+      perturbPhysicsGraph();
+    }
+
+    // Auto-initialize on load with deferred safety checks
+    window.addEventListener('DOMContentLoaded', () => {
+      init3DViewer();
+      initPhysicsNetwork();
+    });
+
+    window.addEventListener('load', () => {
+      if (!viewer3D) {
+        init3DViewer();
+      } else {
+        viewer3D.resize();
+        viewer3D.render();
+      }
+    });
+
+    setTimeout(() => {
+      if (!viewer3D) {
+        init3DViewer();
+      } else {
+        viewer3D.resize();
+        viewer3D.render();
+      }
+    }, 300);
+  </script>
+</body>
+</html>

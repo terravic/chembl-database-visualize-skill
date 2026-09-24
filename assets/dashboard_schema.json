@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ChEMBLDashboardData",
+  "type": "object",
+  "required": ["metadata"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["title", "generated_at", "skill_version", "disclaimer"],
+      "properties": {
+        "title": { "type": "string" },
+        "generated_at": { "type": "string" },
+        "chembl_release": { "type": "string" },
+        "skill_version": { "type": "string" },
+        "disclaimer": { "type": "string" }
+      }
+    },
+    "molecule": {
+      "type": "object",
+      "properties": {
+        "molecule_chembl_id": { "type": "string" },
+        "pref_name": { "type": ["string", "null"] },
+        "synonyms": { "type": "array", "items": { "type": "string" } },
+        "molecule_type": { "type": "string" },
+        "max_phase": { "type": ["integer", "null"] },
+        "first_approval": { "type": ["integer", "null"] },
+        "structure": { "type": "object" },
+        "properties": { "type": "object" }
+      }
+    },
+    "structures": {
+      "type": "object",
+      "properties": {
+        "has_3d": { "type": "boolean" },
+        "sdf": { "type": "string" },
+        "svg": { "type": "string" }
+      }
+    },
+    "bioactivities": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "mechanisms": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "indications": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "similarities": {
+      "type": "array",
+      "items": { "type": "object" }
+    }
+  }
+}

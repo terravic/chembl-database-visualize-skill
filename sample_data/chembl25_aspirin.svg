@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 320" width="100%" height="100%" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .chem-bond { stroke: #1e293b; stroke-linecap: round; stroke-linejoin: round; }
+      .chem-bond-double { stroke: #1e293b; stroke-linecap: round; }
+      .chem-ring-fill { fill: rgba(59, 130, 246, 0.08); }
+      html.dark .chem-bond, html.dark .chem-bond-double { stroke: #f8fafc; }
+      html.dark .chem-ring-fill { fill: rgba(59, 130, 246, 0.15); }
+    </style>
+    <filter id="glow-coral" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#ef4444" flood-opacity="0.3"/>
+    </filter>
+    <filter id="glow-amber" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#f97316" flood-opacity="0.3"/>
+    </filter>
+    <filter id="glow-indigo" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#6366f1" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" fill="transparent"/>
+
+  <!-- Benzene ring subtle fill -->
+  <polygon points="110,140 150,115 190,140 190,185 150,210 110,185" class="chem-ring-fill"/>
+
+  <!-- Benzene ring skeletal bonds -->
+  <polygon points="110,140 150,115 190,140 190,185 150,210 110,185" class="chem-bond" stroke-width="2.6" fill="none"/>
+  <!-- Alternating inner double bonds -->
+  <line x1="150" y1="124" x2="182" y2="144" class="chem-bond-double" stroke-width="1.8"/>
+  <line x1="182" y1="180" x2="150" y2="200" class="chem-bond-double" stroke-width="1.8"/>
+  <line x1="118" y1="180" x2="118" y2="145" class="chem-bond-double" stroke-width="1.8"/>
+
+  <!-- Aromatic Ring Center Inscription -->
+  <circle cx="150" cy="162.5" r="24" fill="none" stroke="rgba(59, 130, 246, 0.25)" stroke-width="1.5" stroke-dasharray="3,3"/>
+
+  <!-- 1. Carboxyl Group at C1 (190, 140) -->
+  <line x1="190" y1="140" x2="240" y2="112" class="chem-bond" stroke-width="2.6"/>
+  
+  <!-- Carbonyl =O -->
+  <line x1="237" y1="110" x2="237" y2="68" stroke="#ef4444" stroke-width="2.6"/>
+  <line x1="243" y1="110" x2="243" y2="68" stroke="#ef4444" stroke-width="2.6"/>
+  <circle cx="240" cy="56" r="13" fill="rgba(239, 68, 68, 0.12)" filter="url(#glow-coral)"/>
+  <text x="240" y="62" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">O</text>
+
+  <!-- Hydroxyl -OH -->
+  <line x1="240" y1="112" x2="282" y2="134" class="chem-bond" stroke-width="2.6"/>
+  <circle cx="298" cy="140" r="15" fill="rgba(239, 68, 68, 0.12)" filter="url(#glow-coral)"/>
+  <text x="298" y="145" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="bold" fill="#ef4444" text-anchor="middle">OH</text>
+
+  <!-- 2. Acetoxy Group at C2 (190, 185) -->
+  <line x1="190" y1="185" x2="235" y2="210" class="chem-bond" stroke-width="2.6"/>
+  
+  <!-- Ester Oxygen -O- -->
+  <circle cx="244" cy="214" r="13" fill="rgba(249, 115, 22, 0.12)" filter="url(#glow-amber)"/>
+  <text x="244" y="219" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="bold" fill="#ea580c" text-anchor="middle">O</text>
+
+  <!-- Ester bond to Acetyl Carbon -->
+  <line x1="256" y1="216" x2="295" y2="234" class="chem-bond" stroke-width="2.6"/>
+  
+  <!-- Acetyl Carbonyl =O (pointing down) -->
+  <line x1="292" y1="235" x2="292" y2="272" stroke="#ef4444" stroke-width="2.6"/>
+  <line x1="298" y1="235" x2="298" y2="272" stroke="#ef4444" stroke-width="2.6"/>
+  <circle cx="295" cy="282" r="13" fill="rgba(239, 68, 68, 0.12)" filter="url(#glow-coral)"/>
+  <text x="295" y="288" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">O</text>
+
+  <!-- Acetyl Methyl -CH3 (pointing right) -->
+  <line x1="295" y1="234" x2="340" y2="212" class="chem-bond" stroke-width="2.6"/>
+  <circle cx="362" cy="206" r="18" fill="rgba(99, 102, 241, 0.12)" filter="url(#glow-indigo)"/>
+  <text x="362" y="211" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="bold" fill="#6366f1" text-anchor="middle">CH<tspan font-size="11" dy="3">3</tspan></text>
+</svg>

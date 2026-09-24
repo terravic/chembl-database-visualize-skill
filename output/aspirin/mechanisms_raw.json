@@ -1,0 +1,13 @@
+{
+  "mechanisms": [
+    {
+      "mechanism_of_action": "Cyclooxygenase-1 inhibitor",
+      "action_type": "INHIBITOR",
+      "target_chembl_id": "CHEMBL221",
+      "target_name": "Cyclooxygenase-1",
+      "direct_interaction": true,
+      "disease_efficacy": true
+    }
+  ],
+  "_license_notice": "Data from the ChEMBL Database. Please review the licensing terms at https://www.ebi.ac.uk/chembl/"
+}
