@@ -19,7 +19,7 @@ wheels/
 .installed.cfg
 *.egg
 
-# --- env ---
+# --- Virtual Environments ---
 .venv/
 venv/
 env/
@@ -27,19 +27,19 @@ ENV/
 .health-venv/
 .python-version
 
-# --- C extensions ---
+# --- C Extensions ---
 *.so
 
-# --- Jupyter / Colab ---
+# --- Notebooks ---
 .ipynb_checkpoints/
 *.ipynb_checkpoints
 
-# --- Node / A2UI tooling ---
+# --- Node ---
 node_modules/
 npm-debug.log*
 yarn-error.log*
 
-# --- Secrets / Credentials ---
+# --- Secrets and Credentials ---
 .env
 .env.*
 !.env.example
@@ -59,13 +59,12 @@ yarn-error.log*
 *.parquet
 *.avro
 
-# --- Logs and scratch output ---
+# --- Logs and Scratch Output ---
 *.log
 scratch/
 tmp/
 
-
-# --- OS / editor ---
+# --- OS and Editor ---
 .DS_Store
 Thumbs.db
 .idea/
@@ -74,21 +73,18 @@ Thumbs.db
 *.swo
 *~
 
-# --- Coding Agents ---
-CLAUDE.md
-.claude/
+# --- Agent Directories ---
 .agents/skills/
 .agents/roles/
 .refs/
-.adk/
 
-# --- Local / Personal Notes ---
+# --- Local Notes ---
 TODO*.md
 *.local.md
 notes/
 BUILD-NOTES.md
 
-# --- Run ---
+# --- Runtime Artifacts ---
 /raw/*
 /findings/
 /gates/*
@@ -108,10 +104,8 @@ BUILD-NOTES.md
 *.vcf
 *.vcf.gz
 *.out
-*.log
 dashboards/*.html
 .cache/
 .coverage
 .coverage.*
 htmlcov/
-

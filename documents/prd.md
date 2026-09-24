@@ -2,8 +2,8 @@
 ## Project: ChEMBL Database Visualize Skill (`chembl-database-visualize`)
 
 ### Document Metadata
-- Document Version: 1.2.0
-- Publication Date: 2026-09-18
+- Document Version: 1.3.0
+- Publication Date: 2026-09-24
 - License: Apache License 2.0
 - Target Platform: Standard AI Agent Platforms and CLI Environments
 
@@ -12,10 +12,10 @@
 ### 1. User Stories and Project Scope
 
 #### 1.1 Target Personas
-1. **Computational Chemist and Pharmacologist (Technical User)**:
+1. **Computational Chemist and Pharmacologist (Computational Domain Specialist)**:
    - Needs programmatic access to precise bioactivity metrics, standardized concentrations, and chemical structures.
    - Requires automated pIC50 and pKi calculations, Lipinski drug-likeness scoring, and interactive 3D conformer exploration to prioritize candidate compounds.
-2. **Clinical Researcher and Translational Analyst (Semi-Technical User)**:
+2. **Clinical Researcher and Translational Analyst (Translational Domain Analyst)**:
    - Needs rapid cross-referencing between target proteins, known approved drugs, clinical trial development stages, and mechanism of action annotations.
    - Requires consolidated clinical phase timelines and disease indication mappings linked to standard vocabularies (EFO, MeSH, ATC).
 3. **Agentic System and Autonomous LLM Workflow (Autonomous Consumer)**:
@@ -25,16 +25,16 @@
 #### 1.2 In-Scope Capabilities
 - Backward compatibility with the baseline ChEMBL API client covering 30 REST endpoints (molecules, targets, bioactivities, assays, mechanisms, indications, documents, and image downloads).
 - Rate-limited HTTP query engine enforcing 5.0 queries per second (QPS) with exponential backoff and jitter on HTTP 429 and 503 response codes.
-- Concentration unit normalization converting diverse units (M, mM, uM, uM, pM, fM) to standardized nanomolar (nM) units.
+- Concentration unit normalization converting diverse units (M, mM, uM, pM, fM) to standardized nanomolar (nM) units.
 - Calculation of negative logarithmic potency: pIC50 = 9 - log10(normalized_value_nM).
 - Computation of Lipinski Rule of 5 parameters: Molecular Weight (MW <= 500 Da), AlogP (<= 5.0), Hydrogen Bond Donors (HBD <= 5), Hydrogen Bond Acceptors (HBA <= 10), Rotatable Bonds (<= 10), and Topological Polar Surface Area (TPSA <= 140 A^2).
 - Pure SVG Spider/Radar chart rendering depicting chemical space boundaries and compound property compliance.
 - Interactive 2D chemical topology visualization with element-specific color coding (Oxygen red, Ester Oxygen amber, Methyl CH3 indigo, Carbon skeleton dark slate/white), non-overlapping skeletal geometry, interactive "Toggle Highlights" button for functional group halos and ring shading, and SVG tooltip elements.
-- Interactive 3D molecular conformer viewer using 3Dmol.js rendering embedded SDF coordinates with automated interactive HTML5 3D rotational canvas fallback, Auto-Spin rotational physics, Reset View, and rendering style selectors (Sticks, Ball & Stick, Spheres, Surface).
-- Interactive physics-driven force-directed graph modeling representing compound, target, and analog nodes with spring forces, charge repulsion, drag-and-drop interactions, and Perturb, Pause, and Recenter controls.
-- Minimalist icon-only light and dark theme toggle featuring Sun and Moon SVG icons with class-based Tailwind styling and CSS variable overrides across all components.
+- Interactive 3D molecular conformer viewer using 3Dmol.js rendering embedded SDF coordinates with automated interactive SVG 3D rotational projection fallback, Auto-Spin rotational physics, Reset View, and rendering style selectors (Sticks, Ball & Stick, Spheres, Surface).
+- Interactive physics-driven force-directed SVG graph modeling representing compound, target, and analog nodes with spring forces, charge repulsion, drag-and-drop interactions, and Perturb, Pause, and Recenter controls.
+- Light and dark theme switcher (`Light Mode` / `Dark Mode`) with class-based Tailwind styling and CSS variable overrides across all components.
 - Tanimoto similarity filtering grid with responsive analog cards, match percentage progress bars, and client-side interactive sliders for real-time similarity and molecular weight thresholding.
-- End-to-end unified workflow pipeline (`scripts/run_pipeline.py`) executing compound, target, or SMILES searches, automatically integrating chemical similarity analogs into compound profiles, and compiling standalone `dashboard.html` files.
+- End-to-end unified workflow pipeline (`scripts/run_pipeline.py`) executing compound, target, or SMILES searches, automatically integrating chemical similarity analogs into compound profiles, and compiling standalone `dashboard.html` files using relative workspace paths.
 - Deterministic offline mock mode (`--mock`) utilizing synthetic data without external network egress.
 - License verification guard ensuring compliance with EMBL-EBI terms and CC BY-SA licensing terms.
 
@@ -143,38 +143,38 @@ Agent Harness           run_pipeline.py        chembl_api.py       generate_dash
   - `--limit <INT>`: Upper bound for fetched records (default: 10).
   - `--normalize`: Boolean flag enforcing conversion to nanomolar units.
   - `--mock`: Boolean flag enabling local synthetic execution.
-  - `-o / --output_dir <PATH>`: Destination directory for all generated artifacts.
+  - `-o / --output_dir <PATH>`: Relative or local destination directory for all generated artifacts.
 
 #### 3.2 Analytical Processing Stages
 1. **License Verification**:
    - The pipeline checks for `.licenses/chembl_database_visualize_LICENSE.txt` in the workspace root.
    - If missing, it prints the EMBL-EBI terms notification and initializes the file with the current ISO 8601 UTC timestamp.
 2. **Data Acquisition**:
-   - Dispatches requests to `chembl_api.py`.
+   - Dispatches requests to `scripts/chembl_api.py`.
    - In live mode: applies 5.0 QPS rate limiting with jitter backoff.
    - In mock mode: bypasses sockets and extracts matching payloads from `sample_data/`.
 3. **Physicochemical Evaluation**:
    - Parses `full_mwt`, `alogp`, `hbd`, `hba`, `psa`, and `rtb` from compound properties.
-   - Calculates Lipinski Rule of 5 violations and assigns compliance badges.
+   - Calculates Lipinski Rule of 5 violations and assigns compliance status badges.
 4. **Bioactivity Standardization & SAR**:
    - Normalizes concentration units into standard nM.
    - Computes `pIC50 = 9 - log10(nM)`.
    - Groups records into high (<100 nM), moderate (100 to 10,000 nM), and weak (>10,000 nM) potency bins.
 5. **Dashboard Compilation & Component Integration**:
    - Compiles five synchronized visual analytics sections into a single self-contained HTML5 application:
-     - **Compound Card**: 2D chemical topology with non-overlapping geometry and highlight toggle, 3D interactive conformer with WebGL/HTML5 canvas fallback and spin/reset/style controls, SVG Lipinski radar chart, and 6-property metric grid.
-     - **Force-Directed Physics Graph**: Interactive HTML5 canvas spring-mass simulation modeling compound-analog structural relationships with drag-and-drop mechanics and simulation controls.
+     - **Compound Card**: 2D chemical topology with non-overlapping geometry and highlight toggle, 3D interactive conformer with WebGL/SVG projection fallback and spin/reset/style controls, SVG Lipinski radar chart, and 6-property metric grid.
+     - **Force-Directed Physics Graph**: Interactive SVG spring-mass simulation (`#physics-viewport`) modeling compound-analog structural relationships with drag-and-drop mechanics and simulation controls.
      - **Clinical Tracker**: Milestone timeline tracking regulatory progression from Phase 0 through Phase 4 with mechanism of action and clinical indication annotations.
      - **Bioactivity Analytics**: Standardized nanomolar potency histogram and real-time search-filterable assay records table with pIC50 scores.
      - **Chemical Similarity Grid**: Interactive analog cards with Tanimoto similarity progress bars and client-side dual sliders for real-time similarity and molecular weight thresholding.
-   - Embeds a minimalist icon-only light/dark theme switch with synchronized palette styling across all DOM elements, charts, and 3D viewports.
+   - Embeds a text-labeled light/dark theme switcher (`#theme-toggle-btn`) with synchronized palette styling across all DOM elements, charts, and 3D viewports.
 
 #### 3.3 Output Specifications
 The output directory must contain:
 - `data.json`: Complete serialized ChEMBL records and analytical results.
 - `structure.sdf`: 3D coordinates file (when available).
 - `structure.svg`: 2D vector chemical graphic (when available).
-- `dashboard.html`: Fully self-contained, responsive single-page web application.
+- `dashboard.html`: Self-contained, responsive single-page web application.
 
 ---
 
@@ -183,12 +183,13 @@ The output directory must contain:
 #### 4.1 Latency and Performance
 - Under `--mock` mode, the complete pipeline execution must complete in under 5.0 seconds.
 - In live mode, requests must strictly respect the 5.0 QPS ceiling (200 ms minimum inter-request interval).
-- Generated `dashboard.html` files must render in standard modern web browsers (Chrome, Firefox, Safari) in under 1.5 seconds without layout shifts.
+- Generated `dashboard.html` files must render in standard modern web browsers in under 1.5 seconds without layout shifts.
 
 #### 4.2 Security, Privacy, and Healthcare Compliance
 - **Zero PHI/PII Mandate**: All code, test fixtures, and mock files must contain exclusively synthetic or public reference chemistry data. No patient-level or clinical research participant data is permitted.
 - **No Credential Exposure**: The skill must not require, store, or log API keys or internal credentials.
-- **No Unsanctioned Egress**: All network traffic is strictly bounded to `https://www.ebi.ac.uk/chembl/api/data` and approved public CDNs (Tailwind CDN, cdnjs 3Dmol.js).
+- **Relative Path Portability**: All CLI summaries, documentation references, and script resolution paths use relative workspace paths rooted at the repository top level.
+- **Bounded Network Egress**: All network traffic is bounded to `https://www.ebi.ac.uk/chembl/api/data` and standard public CDNs (Tailwind CSS CDN, cdnjs 3Dmol.js).
 
 #### 4.3 Reliability and Extensibility
 - Dual-engine HTTP support: Automatic fallback to standard library `urllib.request` when `polite-http` is unavailable.
@@ -208,4 +209,4 @@ The output directory must contain:
 | Upstream Rate Limit (HTTP 429) | Exceeded EMBL-EBI concurrency or quota thresholds | Exponential backoff retry with random jitter (up to 3 retries) | Retries transparently; fails with error JSON if exhausted |
 | Upstream Outage (HTTP 503) | EMBL-EBI server maintenance or transient failure | Exponential backoff retry with random jitter (up to 3 retries) | Retries transparently; fails with error JSON if exhausted |
 | Network Isolation / Sandboxed CI | Pipeline invoked in environment without external internet | Pipeline fails unless `--mock` is specified | `--mock` uses local synthetic fixtures; exit code 0 |
-| Empty Similarity Search | SMILES search yields no analogs above threshold | Pipeline returns empty similarity array | Dashboard displays notice: "No analogs found matching criteria" |
+| Empty Similarity Search | SMILES search yields no analogs above threshold | Pipeline returns empty similarity array | Dashboard displays notice: "No chemical analogs found for the specified query." |

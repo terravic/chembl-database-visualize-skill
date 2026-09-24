@@ -35,9 +35,8 @@ import urllib.request
 
 BASE_URL = "https://www.ebi.ac.uk/chembl/api/data"
 _LICENSE_NOTICE = (
-    "Data from the ChEMBL Database. You MUST notify the user"
-    " that this data comes from ChEMBL and advise them to"
-    " review the ChEMBL licensing terms."
+    "Data extracted from the EMBL-EBI ChEMBL Database (CC BY-SA 3.0 / 4.0)."
+    " Review the licensing terms at https://www.ebi.ac.uk/chembl/"
 )
 
 SEARCHABLE_ENDPOINTS = frozenset([
@@ -86,7 +85,7 @@ ENDPOINT_MAP = {
 UNIT_CONVERSION_TO_NM = {
     "nm": 1.0,
     "um": 1e3,
-    "µm": 1e3,
+    "\u00b5m": 1e3,
     "mm": 1e6,
     "m": 1e9,
     "pm": 1e-3,
@@ -180,6 +179,19 @@ def _load_sample_fixture(filename: str) -> Any:
   return None
 
 
+def _to_relative_path(path: str) -> str:
+  """Convert path inside project root to a relative path."""
+  try:
+    root = _get_project_root()
+    abs_p = os.path.abspath(path)
+    if abs_p.startswith(root):
+      rel = os.path.relpath(abs_p, root)
+      return f"./{rel}" if not rel.startswith((".", "/")) else rel
+  except Exception:
+    pass
+  return path
+
+
 def _write_json(data: Any, output_path: str) -> None:
   """Write a Python object as indented JSON to output_path."""
   out_dir = os.path.dirname(output_path)
@@ -200,7 +212,7 @@ def _write_json(data: Any, output_path: str) -> None:
       json.dumps(
           {
               "status": "success",
-              "output_file": output_path,
+              "output_file": _to_relative_path(output_path),
               "size_bytes": os.path.getsize(output_path),
               "license_notice": _LICENSE_NOTICE,
           },
@@ -256,7 +268,7 @@ def _download_binary(url: str, output_path: str) -> dict[str, Any]:
       f.write(content)
     return {
         "status": "success",
-        "message": f"Saved to {output_path}",
+        "message": f"Saved to {_to_relative_path(output_path)}",
         "size_bytes": len(content),
         "license_notice": _LICENSE_NOTICE,
     }

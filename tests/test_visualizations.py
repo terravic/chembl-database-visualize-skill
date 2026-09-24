@@ -109,21 +109,21 @@ class TestVisualizations(unittest.TestCase):
     self.assertIn("91.2% Match", html_out)
 
   def test_dashboard_compiler_physics_and_theme(self):
-    """Verify interactive dashboard contains physics components and clean theme toggle."""
+    """Verify interactive dashboard contains physics components and theme toggle."""
     dashboard = generate_dashboard.build_full_dashboard(
         title="Test Aspirin",
         compound_data={"molecule_chembl_id": "CHEMBL25", "pref_name": "ASPIRIN"},
         similarity_data={"molecules": [{"molecule_chembl_id": "CHEMBL26", "similarity": 91.2}]},
     )
     # Verify physics simulation elements
-    self.assertIn("physics-canvas", dashboard)
+    self.assertIn("physics-viewport", dashboard)
     self.assertIn("stepPhysics", dashboard)
     self.assertIn("Force-Directed Similarity & SAR Network", dashboard)
 
-    # Verify icon-only theme toggle
+    # Verify theme toggle
     self.assertIn("theme-toggle-btn", dashboard)
-    self.assertIn("theme-sun-icon", dashboard)
-    self.assertIn("theme-moon-icon", dashboard)
+    self.assertIn("theme-light-label", dashboard)
+    self.assertIn("theme-dark-label", dashboard)
 
     # Verify 3D conformer viewer
     self.assertIn("mol-3d-viewer", dashboard)

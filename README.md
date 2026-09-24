@@ -13,7 +13,7 @@ The workflow diagram above illustrates the end-to-end architecture:
 ### Key Capabilities
 - **3D Conformer and 2D Vector Structural Visualizations**: Renders interactive WebGL conformers via 3Dmol.js alongside 2D vector diagrams with element-specific color coding.
 - **Physicochemical Profiling**: Automated calculation of Lipinski Rule of 5 parameters (MW, AlogP, HBD, HBA, Rotatable Bonds, TPSA) with rule-violation detection and an SVG spider/radar chart.
-- **SAR & Bioactivity Distributions**: Standardization of bioactivity measurements into nanomolar (nM) concentrations, computation of negative logarithmic affinity (pIC50), and rendering of potency histograms.
+- **SAR and Bioactivity Distributions**: Standardization of bioactivity measurements into nanomolar (nM) concentrations, computation of negative logarithmic affinity (pIC50), and rendering of potency histograms.
 - **Clinical Development Tracking**: Stage timelines mapping compounds across Preclinical, Phase I, Phase II, Phase III, and Approved statuses, coupled with Mechanism of Action and ATC/MeSH indication cards.
 - **Chemical Similarity and Analog Matrix**: Tanimoto similarity scoring and dynamic client-side filtering sliders for structure-activity exploration.
 - **Interactive Force-Directed Network Graph**: Physics simulation mapping compound-target-assay connectivity with interactive node repositioning.
@@ -24,115 +24,118 @@ The workflow diagram above illustrates the end-to-end architecture:
 
 ## 2. Directory Structure
 
-```
+```text
 .
-├── .licenses/
-│   └── chembl_database_visualize_LICENSE.txt
-├── assets/
-│   ├── chembl25_aspirin.json
-│   ├── chembl25_aspirin.sdf
-│   ├── chembl25_aspirin.svg
-│   ├── dashboard_schema.json
-│   ├── egfr_activities.json
-│   ├── similarity_aspirin.json
-│   ├── skill_workflow_dashboard.jpg
-│   └── structure_fallback.svg
-├── dashboard.html
-├── documents/
-│   └── prd.md
-├── LICENSE
-├── output/
-│   └── aspirin/
-│       ├── activities_raw.json
-│       ├── dashboard.html
-│       ├── data.json
-│       ├── drug_summary.json
-│       ├── indications_raw.json
-│       ├── mechanisms_raw.json
-│       ├── molecule_raw.json
-│       ├── similarity_raw.json
-│       ├── structure.sdf
-│       └── structure.svg
-├── pytest.ini
-├── README.md
-├── references/
-│   ├── api_endpoints.md
-│   ├── citation.bib
-│   └── dashboard_schema.md
-├── requirements.txt
-├── sample_data/
-│   ├── chembl25_aspirin.json
-│   ├── chembl25_aspirin.sdf
-│   ├── chembl25_aspirin.svg
-│   ├── egfr_activities.json
-│   └── similarity_aspirin.json
-├── scripts/
-│   ├── chembl_api.py
-│   ├── generate_dashboard.py
-│   ├── run_pipeline.py
-│   ├── visualize_bioactivity.py
-│   ├── visualize_compound.py
-│   └── visualize_similarity.py
-├── SKILL.md
-├── SKILL_LICENSES.md
-├── skills/
-│   └── chembl_database_visualize/
-│       ├── assets/
-│       ├── LICENSE
-│       ├── references/
-│       ├── sample_data/
-│       ├── scripts/
-│       └── SKILL.md
-└── tests/
-    ├── run_tests.py
-    ├── test_chembl_api.py
-    ├── test_pipeline.py
-    └── test_visualizations.py
+|-- .gitignore
+|-- .licenses/
+|   '-- chembl_database_visualize_LICENSE.txt
+|-- assets/
+|   |-- chembl25_aspirin.json
+|   |-- chembl25_aspirin.sdf
+|   |-- chembl25_aspirin.svg
+|   |-- dashboard_schema.json
+|   |-- egfr_activities.json
+|   |-- similarity_aspirin.json
+|   |-- skill_workflow_dashboard.jpg
+|   '-- structure_fallback.svg
+|-- dashboard.html
+|-- documents/
+|   '-- prd.md
+|-- LICENSE
+|-- output/
+|   '-- aspirin/
+|       |-- activities_raw.json
+|       |-- dashboard.html
+|       |-- data.json
+|       |-- drug_summary.json
+|       |-- indications_raw.json
+|       |-- mechanisms_raw.json
+|       |-- molecule_raw.json
+|       |-- similarity_raw.json
+|       |-- structure.sdf
+|       '-- structure.svg
+|-- pytest.ini
+|-- README.md
+|-- references/
+|   |-- api_endpoints.md
+|   |-- citation.bib
+|   '-- dashboard_schema.md
+|-- requirements.txt
+|-- sample_data/
+|   |-- chembl25_aspirin.json
+|   |-- chembl25_aspirin.sdf
+|   |-- chembl25_aspirin.svg
+|   |-- egfr_activities.json
+|   '-- similarity_aspirin.json
+|-- scripts/
+|   |-- chembl_api.py
+|   |-- generate_dashboard.py
+|   |-- run_pipeline.py
+|   |-- visualize_bioactivity.py
+|   |-- visualize_compound.py
+|   '-- visualize_similarity.py
+|-- SKILL.md
+|-- SKILL_LICENSES.md
+|-- skills/
+|   '-- chembl_database_visualize/
+|       |-- .licenses/
+|       |   '-- chembl_database_visualize_LICENSE.txt
+|       |-- assets -> ../../assets
+|       |-- LICENSE -> ../../LICENSE
+|       |-- references -> ../../references
+|       |-- sample_data -> ../../sample_data
+|       |-- scripts -> ../../scripts
+|       '-- SKILL.md -> ../../SKILL.md
+'-- tests/
+    |-- run_tests.py
+    |-- test_chembl_api.py
+    |-- test_pipeline.py
+    '-- test_visualizations.py
 ```
 
 ---
 
-## 3. Non-Technical User Guide
+## 3. User Guide and Real-World Examples
 
-This skill acts as an automated scientific research assistant for exploring medicinal chemistry and pharmacology data from the ChEMBL database. You do not need software development expertise to understand and use its outputs.
+This skill acts as an automated research assistant for exploring medicinal chemistry and pharmacology data from the ChEMBL database. You do not need programming experience to understand and interact with its outputs.
 
 ### 3.1 What You Can Learn from This Skill
-- **Drug Profiles**: Look up any approved medicine or experimental molecule (such as Aspirin, Ibuprofen, or Imatinib) to see what it is used for, how it works in the body, and its chemical structure.
-- **Drug-Likeness Rules**: Understand whether a chemical is likely to be suitable as an oral medication according to standard pharmaceutical rules (Lipinski's Rule of 5), measuring weight, fat solubility, and molecular flexibility.
-- **Target Potency**: Find out how strongly a molecule binds to a biological target (such as a cancer receptor or enzyme). The skill converts experimental values from different labs into a standard scale (nanomolar concentrations and pIC50 scores).
-- **Related Compounds**: Identify chemical analogs—molecules that share similar chemical structures—and compare their differences in potency.
+- **Drug Profiles**: Look up any approved medicine or experimental molecule (such as Aspirin, Ibuprofen, or Imatinib) to inspect what conditions it treats, how it works in the body, and its 2D and 3D chemical structures.
+- **Drug-Likeness Rules**: Evaluate whether a molecule has physical and chemical properties suitable for oral administration according to standard pharmaceutical criteria (Lipinski's Rule of 5), measuring molecular weight, water/fat solubility balance, and structural flexibility.
+- **Target Potency**: Determine how strongly a molecule binds to a biological protein target (such as a receptor or enzyme). The skill converts experimental laboratory values from different studies into a unified scale (nanomolar concentrations and pIC50 scores).
+- **Related Compounds**: Identify chemical analogs--molecules that share similar structural backbones--and compare their differences in size, solubility, and clinical development stage.
 
 ### 3.2 Real-World Usage Scenarios
 
-#### Scenario 1: Learning About a Medicine (Aspirin)
-- **What to ask**:
-  "Tell me about the drug Aspirin (CHEMBL25). What diseases does it treat, what proteins does it block, and what is its chemical structure?"
-- **What happens**:
-  The skill retrieves the approved indications (such as pain relief, fever reduction, and cardiovascular prevention), identifies that it blocks Cyclooxygenase-1 and Cyclooxygenase-2 enzymes, evaluates that it passes all standard drug-likeness rules, and generates a visual dashboard.
-- **How to view the result**:
-  Open the generated file `./output/aspirin/dashboard.html` (or `./dashboard.html`) in any web browser (Chrome, Edge, Firefox, or Safari). You can rotate the 3D molecule with your mouse, view the 2D colored chemical diagram, and switch between light and dark visual themes.
+#### Scenario 1: Investigating an Approved Medication (Aspirin)
+- **Question to ask**:
+  "Tell me about the drug Aspirin (CHEMBL25). What medical conditions is it approved to treat, what enzymes does it block, and what does its structure look like?"
+- **What the skill does**:
+  The skill retrieves the clinical profile for Aspirin, identifies its approved indications (such as pain relief, fever reduction, and cardiovascular prophylaxis), extracts its mechanism of action (blocking Cyclooxygenase-1 and Cyclooxygenase-2 enzymes), verifies that it satisfies all four Lipinski oral drug-likeness criteria, and builds an interactive dashboard.
+- **How to explore the result**:
+  Open the generated file `./output/aspirin/dashboard.html` (or `./dashboard.html`) in any modern web browser. You can click and drag to rotate the 3D molecule, toggle functional group highlights on the 2D diagram, and switch between Light Mode and Dark Mode.
 
-#### Scenario 2: Evaluating a Biological Target (EGFR)
-- **What to ask**:
-  "Summarize the bioactivity data for the cancer target EGFR (CHEMBL203). What are the typical potencies of compounds tested against it?"
-- **What happens**:
-  The skill retrieves experimental measurements across screening studies, standardizes the concentration units to nanomolar (nM), and organizes the compounds into high, moderate, and low potency categories.
-- **How to view the result**:
-  The generated dashboard displays a potency histogram showing the distribution of compound affinities, a data table with assay details, and a dynamic network graph showing how tested compounds link to the target.
+#### Scenario 2: Evaluating Compounds Tested Against a Disease Protein (EGFR)
+- **Question to ask**:
+  "Summarize the bioactivity screening data for the receptor EGFR (CHEMBL203). How potent are the molecules tested against this target?"
+- **What the skill does**:
+  The skill collects experimental inhibition measurements (`IC50` values) across published screening studies, converts all concentration units to nanomolar (nM), calculates logarithmic affinity (`pIC50`), and groups the tested molecules into high, moderate, and weak potency categories.
+- **How to explore the result**:
+  The generated dashboard displays a potency distribution histogram, a searchable table of laboratory assays, and a summary of the strongest binding compounds.
 
-#### Scenario 3: Exploring Chemically Similar Molecules
-- **What to ask**:
-  "Find molecules that have a similar chemical backbone to Aspirin and show how their properties compare."
-- **What happens**:
-  The skill runs a structural similarity search based on chemical fingerprints, scoring compounds on a scale from 0% to 100% similarity (Tanimoto index).
-- **How to view the result**:
-  The dashboard includes an interactive slider that allows you to adjust the similarity threshold directly on screen, filtering through candidate analogs without running additional queries.
+#### Scenario 3: Discovering Chemically Similar Analogs
+- **Question to ask**:
+  "Find molecules with a chemical structure similar to Aspirin and compare their molecular weight and clinical stage."
+- **What the skill does**:
+  The skill runs a chemical fingerprint similarity search, ranking related molecules from 0% to 100% structural similarity (Tanimoto score), and compiles an analog comparison gallery.
+- **How to explore the result**:
+  Open the dashboard and use the interactive sliders to filter the analog cards in real time by minimum similarity percentage (for example, 85% or higher) and maximum molecular weight, or drag nodes in the force-directed network graph to inspect structural relationships.
 
 ---
 
 ## 4. Prerequisites
 - **Python Version**: Python 3.10 or higher.
-- **Operating System**: Linux, macOS, or Windows (WSL recommended for Windows environments).
+- **Operating System**: Linux, macOS, or Windows.
 - **Environment Management**: A virtual environment (`venv`) or `uv` is recommended to isolate dependencies.
 
 ### Virtual Environment Setup
@@ -211,11 +214,11 @@ When integrating this skill into an AI agent system, the following prompt patter
 - **Delivered Output**:
   - Summarizes molecular formula (`C9H8O4`), molecular weight (`180.16 Da`), AlogP (`1.31`), and 0 Lipinski violations.
   - Highlights primary mechanisms (Cyclooxygenase-1/2 inhibition) and approved indications.
-  - Provides a direct link to the interactive single-page dashboard at `./output/aspirin/dashboard.html`.
+  - Provides a relative link to the interactive single-page dashboard at `./output/aspirin/dashboard.html`.
 
 #### Example 2: Target Bioactivity Screening and SAR Analysis
 - **User Prompt**:
-  > "Query the bioactivity profile for the cancer target EGFR (CHEMBL203). Standardize all reported IC50 values to nanomolar units, compute pIC50 values, categorize potency distributions, and generate a visual analytics dashboard."
+  > "Query the bioactivity profile for the target EGFR (CHEMBL203). Standardize all reported IC50 values to nanomolar units, compute pIC50 values, categorize potency distributions, and generate a visual analytics dashboard."
 - **Expected Agent Action**:
   Executes the pipeline targeting the specified protein:
   ```bash

@@ -43,9 +43,9 @@ Returns molecules containing the given substructure.
 
 Returns a 2D structure image (SVG). Parameters:
 
-- `engine` — rendering toolkit (default: rdkit)
-- `dimensions` — image size in pixels (max 500, default: 500)
-- `ignoreCoords` — recompute 2D coordinates
+- `engine` - rendering toolkit (default: rdkit)
+- `dimensions` - image size in pixels (max 500, default: 500)
+- `ignoreCoords` - recompute 2D coordinates
 
 ### Status
 
@@ -90,8 +90,8 @@ ChEMBL supports Django-style filter operators as query parameters:
 
 All list endpoints return paginated results. Use `limit` and `offset`:
 
-- `?limit=20&offset=0` — first 20 results
-- `?limit=20&offset=20` — next 20 results
+- `?limit=20&offset=0` - first 20 results
+- `?limit=20&offset=20` - next 20 results
 
 The response includes `page_meta` with `total_count`, `limit`, `offset`,
 `next`, and `previous` links.

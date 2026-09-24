@@ -201,7 +201,7 @@ def render_physics_network_section() -> str:
 
   <div class="p-6">
     <div class="relative w-full h-80 rounded-lg bg-slate-950 border border-slate-800 overflow-hidden">
-      <canvas id="physics-canvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+      <svg id="physics-viewport" class="w-full h-full block cursor-grab active:cursor-grabbing"></svg>
       <div id="physics-tooltip" class="absolute hidden px-2.5 py-1.5 rounded bg-slate-900/95 border border-slate-700 text-slate-100 text-xs shadow-lg pointer-events-none z-20 font-sans"></div>
     </div>
     <div class="mt-3 flex flex-wrap items-center justify-between text-xs text-slate-500">
@@ -350,23 +350,23 @@ def build_full_dashboard(
     html.dark footer {{
       background-color: var(--bg-card) !important;
     }}
-    /* Icon-only theme toggle display sync */
-    html.dark #theme-sun-icon {{
-      display: block !important;
+    /* Theme toggle label display sync */
+    html.dark #theme-light-label {{
+      display: inline !important;
     }}
-    html.dark #theme-moon-icon {{
+    html.dark #theme-dark-label {{
       display: none !important;
     }}
-    html:not(.dark) #theme-sun-icon {{
+    html:not(.dark) #theme-light-label {{
       display: none !important;
     }}
-    html:not(.dark) #theme-moon-icon {{
-      display: block !important;
+    html:not(.dark) #theme-dark-label {{
+      display: inline !important;
     }}
   </style>
 </head>
 <body class="min-h-full flex flex-col antialiased">
-  <!-- Top Application Bar with Icon-Only Light/Dark Toggle -->
+  <!-- Top Application Bar -->
   <header class="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur sticky top-0 z-30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3">
@@ -375,28 +375,14 @@ def build_full_dashboard(
         </div>
         <div>
           <h1 class="text-base font-bold text-slate-900 dark:text-white leading-tight">{html.escape(title)}</h1>
-          <span class="text-xs text-slate-500 dark:text-slate-400">ChEMBL Biological & Chemical Analytics Dashboard</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400">ChEMBL Biological &amp; Chemical Analytics Dashboard</span>
         </div>
       </div>
       <div class="flex items-center space-x-3">
-        <!-- Minimalist Icon-Only Light/Dark Theme Switcher -->
-        <button id="theme-toggle-btn" type="button" onclick="toggleTheme()" aria-label="Toggle theme" class="p-2 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-          <!-- Sun Icon (visible in dark mode) -->
-          <svg id="theme-sun-icon" class="w-4 h-4 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-          <!-- Moon Icon (visible in light mode) -->
-          <svg id="theme-moon-icon" class="w-4 h-4 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
+        <!-- Light/Dark Theme Switcher -->
+        <button id="theme-toggle-btn" type="button" onclick="toggleTheme()" aria-label="Toggle theme" class="px-2.5 py-1 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <span id="theme-light-label" class="hidden dark:inline">Light Mode</span>
+          <span id="theme-dark-label" class="inline dark:hidden">Dark Mode</span>
         </button>
         <span class="text-xs px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono">ChEMBL 34</span>
       </div>
@@ -430,7 +416,7 @@ def build_full_dashboard(
   <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-8 text-xs text-slate-500 dark:text-slate-400">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
       <div class="p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 leading-relaxed text-slate-600 dark:text-slate-300">
-        <span class="font-bold text-slate-800 dark:text-slate-200 block mb-1">Scientific Attribution & Disclaimer</span>
+        <span class="font-bold text-slate-800 dark:text-slate-200 block mb-1">Scientific Attribution &amp; Disclaimer</span>
         <p class="mb-2">{html.escape(_DISCLAIMER_TEXT)}</p>
         <div class="pt-2 border-t border-slate-200 dark:border-slate-700/50 space-y-1">
           <p><span class="font-semibold text-slate-700 dark:text-slate-300">ChEMBL 2024 Reference:</span> {html.escape(_CITATION_ZDRAZIL)}</p>
@@ -456,7 +442,7 @@ def build_full_dashboard(
 
   <!-- Client-Side Interactive & Physics Engine -->
   <script>
-    // Theme Toggle (Icon-Only Switcher)
+    // Theme Toggle Switcher
     function toggleTheme() {{
       const htmlEl = document.documentElement;
       const isDark = htmlEl.classList.toggle('dark');
@@ -491,7 +477,7 @@ def build_full_dashboard(
       URL.revokeObjectURL(url);
     }}
 
-    // 3D Conformer Engine: 3Dmol.js WebGL with Interactive 2D Fallback
+    // 3D Conformer Engine: 3Dmol.js WebGL with Interactive SVG Fallback
     let viewer3D = null;
     let fallback3DActive = false;
 
@@ -530,15 +516,14 @@ def build_full_dashboard(
 
     function render2DFallbackConformer(container, sdf) {{
       container.innerHTML = '';
-      const canvas = document.createElement('canvas');
-      canvas.width = container.clientWidth || 300;
-      canvas.height = container.clientHeight || 256;
-      canvas.style.width = '100%';
-      canvas.style.height = '100%';
-      canvas.style.display = 'block';
-      container.appendChild(canvas);
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
+      const vw = container.clientWidth || 300;
+      const vh = container.clientHeight || 256;
+      const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svgEl.setAttribute('viewBox', '0 0 ' + vw + ' ' + vh);
+      svgEl.style.width = '100%';
+      svgEl.style.height = '100%';
+      svgEl.style.display = 'block';
+      container.appendChild(svgEl);
 
       const {{ atoms, bonds }} = parseSdfAtomsAndBonds(sdf);
       if (atoms.length === 0) {{
@@ -567,10 +552,9 @@ def build_full_dashboard(
       }};
 
       function draw() {{
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const cw = canvas.width / 2;
-        const ch = canvas.height / 2;
-        const scale = Math.min(canvas.width, canvas.height) / 7.2;
+        const cw = vw / 2;
+        const ch = vh / 2;
+        const scale = Math.min(vw, vh) / 7.2;
 
         const proj = atoms.map(a => {{
           const x = a.x - cx;
@@ -588,35 +572,25 @@ def build_full_dashboard(
           }};
         }});
 
-        ctx.lineWidth = 2.5;
+        const parts = [];
         bonds.forEach(b => {{
           const p1 = proj[b.a1];
           const p2 = proj[b.a2];
           if (!p1 || !p2) return;
-          const grad = ctx.createLinearGradient(p1.px, p1.py, p2.px, p2.py);
-          grad.addColorStop(0, elementColors[p1.elem] || '#64748b');
-          grad.addColorStop(1, elementColors[p2.elem] || '#64748b');
-          ctx.strokeStyle = grad;
-          ctx.beginPath();
-          ctx.moveTo(p1.px, p1.py);
-          ctx.lineTo(p2.px, p2.py);
-          ctx.stroke();
+          const col = elementColors[p1.elem] || '#64748b';
+          parts.push('<line x1="' + p1.px.toFixed(1) + '" y1="' + p1.py.toFixed(1) + '" x2="' + p2.px.toFixed(1) + '" y2="' + p2.py.toFixed(1) + '" stroke="' + col + '" stroke-width="2.5"/>');
         }});
 
         const sortedAtoms = [...proj].sort((a, b) => a.pz - b.pz);
         sortedAtoms.forEach(a => {{
           const r = a.elem === 'H' ? 4 : (a.elem === 'C' ? 6.5 : 7.5);
-          ctx.beginPath();
-          ctx.arc(a.px, a.py, r, 0, Math.PI * 2);
-          ctx.fillStyle = elementColors[a.elem] || '#94a3b8';
-          ctx.fill();
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = '#020617';
-          ctx.stroke();
+          const col = elementColors[a.elem] || '#94a3b8';
+          parts.push('<circle cx="' + a.px.toFixed(1) + '" cy="' + a.py.toFixed(1) + '" r="' + r + '" fill="' + col + '" stroke="#020617" stroke-width="1"/>');
         }});
+        svgEl.innerHTML = parts.join('');
       }}
 
-      canvas.addEventListener('mousedown', e => {{
+      svgEl.addEventListener('mousedown', e => {{
         isDragging = true;
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
@@ -819,14 +793,16 @@ def build_full_dashboard(
     let mousePos = {{ x: 0, y: 0 }};
 
     function initPhysicsNetwork() {{
-      const canvas = document.getElementById('physics-canvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
+      const viewport = document.getElementById('physics-viewport');
+      if (!viewport) return;
 
+      let vw = 600;
+      let vh = 320;
       function resize() {{
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = rect.height;
+        const rect = viewport.getBoundingClientRect();
+        vw = rect.width || 600;
+        vh = rect.height || 320;
+        viewport.setAttribute('viewBox', '0 0 ' + vw + ' ' + vh);
       }}
       resize();
       window.addEventListener('resize', resize);
@@ -844,8 +820,8 @@ def build_full_dashboard(
       nodes = [];
       links = [];
 
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
+      const cx = vw / 2;
+      const cy = vh / 2;
 
       // Primary Center Node
       nodes.push({{
@@ -899,8 +875,8 @@ def build_full_dashboard(
       }});
 
       // Mouse Drag Interaction
-      canvas.addEventListener('mousedown', (e) => {{
-        const rect = canvas.getBoundingClientRect();
+      viewport.addEventListener('mousedown', (e) => {{
+        const rect = viewport.getBoundingClientRect();
         mousePos.x = e.clientX - rect.left;
         mousePos.y = e.clientY - rect.top;
 
@@ -914,8 +890,8 @@ def build_full_dashboard(
         }}
       }});
 
-      canvas.addEventListener('mousemove', (e) => {{
-        const rect = canvas.getBoundingClientRect();
+      viewport.addEventListener('mousemove', (e) => {{
+        const rect = viewport.getBoundingClientRect();
         mousePos.x = e.clientX - rect.left;
         mousePos.y = e.clientY - rect.top;
 
@@ -951,8 +927,8 @@ def build_full_dashboard(
           return;
         }}
 
-        const cx = canvas.width / 2;
-        const cy = canvas.height / 2;
+        const cx = vw / 2;
+        const cy = vh / 2;
 
         // Repulsion between nodes
         for (let i = 0; i < nodes.length; i++) {{
@@ -1016,9 +992,9 @@ def build_full_dashboard(
 
           // Boundary bounce
           if (n.x < n.radius) {{ n.x = n.radius; n.vx *= -0.5; }}
-          if (n.x > canvas.width - n.radius) {{ n.x = canvas.width - n.radius; n.vx *= -0.5; }}
+          if (n.x > vw - n.radius) {{ n.x = vw - n.radius; n.vx *= -0.5; }}
           if (n.y < n.radius) {{ n.y = n.radius; n.vy *= -0.5; }}
-          if (n.y > canvas.height - n.radius) {{ n.y = canvas.height - n.radius; n.vy *= -0.5; }}
+          if (n.y > vh - n.radius) {{ n.y = vh - n.radius; n.vy *= -0.5; }}
         }}
 
         render();
@@ -1026,34 +1002,19 @@ def build_full_dashboard(
       }}
 
       function render() {{
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Draw spring links
+        const parts = [];
         for (let l of links) {{
-          ctx.beginPath();
-          ctx.moveTo(l.source.x, l.source.y);
-          ctx.lineTo(l.target.x, l.target.y);
-          ctx.strokeStyle = '#334155';
-          ctx.lineWidth = Math.max(1, (l.target.similarity || 70) / 35);
-          ctx.stroke();
+          const sw = Math.max(1, (l.target.similarity || 70) / 35).toFixed(1);
+          parts.push('<line x1="' + l.source.x.toFixed(1) + '" y1="' + l.source.y.toFixed(1) + '" x2="' + l.target.x.toFixed(1) + '" y2="' + l.target.y.toFixed(1) + '" stroke="#334155" stroke-width="' + sw + '"/>');
         }}
-
-        // Draw nodes
         for (let n of nodes) {{
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, n.radius, 0, 2 * Math.PI);
-          ctx.fillStyle = n.color;
-          ctx.fill();
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = n.isCenter ? '#93c5fd' : '#1e293b';
-          ctx.stroke();
-
-          // Node label
-          ctx.fillStyle = '#f8fafc';
-          ctx.font = (n.isCenter ? 'bold 11px' : '10px') + ' system-ui, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText(n.id, n.x, n.y + n.radius + 12);
+          const stroke = n.isCenter ? '#93c5fd' : '#1e293b';
+          const fw = n.isCenter ? 'bold' : 'normal';
+          const fs = n.isCenter ? '11' : '10';
+          parts.push('<circle cx="' + n.x.toFixed(1) + '" cy="' + n.y.toFixed(1) + '" r="' + n.radius + '" fill="' + n.color + '" stroke="' + stroke + '" stroke-width="2"/>');
+          parts.push('<text x="' + n.x.toFixed(1) + '" y="' + (n.y + n.radius + 12).toFixed(1) + '" fill="#f8fafc" font-family="system-ui, sans-serif" font-size="' + fs + '" font-weight="' + fw + '" text-anchor="middle">' + n.id + '</text>');
         }}
+        viewport.innerHTML = parts.join('');
       }}
 
       stepPhysics();
@@ -1073,10 +1034,11 @@ def build_full_dashboard(
     }}
 
     function resetPhysicsPositions() {{
-      const canvas = document.getElementById('physics-canvas');
-      if (!canvas) return;
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
+      const viewport = document.getElementById('physics-viewport');
+      if (!viewport) return;
+      const rect = viewport.getBoundingClientRect();
+      const cx = (rect.width || 600) / 2;
+      const cy = (rect.height || 320) / 2;
       if (nodes.length > 0) {{
         nodes[0].x = cx;
         nodes[0].y = cy;

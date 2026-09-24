@@ -330,10 +330,6 @@ def render_compound_card(
         </div>
         <div id="mol-3d-viewer" class="w-full h-64 relative rounded bg-slate-950 overflow-hidden flex items-center justify-center" style="min-height: 256px; height: 256px; position: relative; width: 100%;">
           { """<div id="mol-3d-loader" class="flex flex-col items-center justify-center space-y-2 text-slate-400">
-            <svg class="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-            </svg>
             <span class="text-xs font-mono text-slate-400">Loading 3D Conformer...</span>
           </div>""" if has_3d else '<span class="text-xs text-slate-500 font-mono">3D Coordinates Not Available</span>' }
         </div>
