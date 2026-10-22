@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Chemical similarity and analog gallery component.
+"""Chemical similarity, concordance heatmap matrix, and analog gallery component.
 
-Transforms ChEMBL similarity and substructure search results into responsive
-analog cards with Tanimoto similarity bars, real-time client-side filtering
-sliders, and comparative chemical matrices.
+Transforms ChEMBL similarity and substructure search results into a high-contrast
+Vivid Indigo / Vibrant Teal heatmap matrix and flat Bento analog cells with
+real-time client-side filtering sliders strictly adhering to DESIGN.md.
 """
 
 from __future__ import annotations
@@ -25,16 +25,33 @@ import argparse
 import html
 import json
 import os
-import sys
 from typing import Any
 
 
+def _heatmap_style(norm_val: float, palette: str = "teal") -> str:
+  """Compute high-contrast gradient cell background & text color per DESIGN.md Section 5.
+
+  Transitions from a soft desaturated tint into saturated Vivid Indigo (#4F46E5)
+  or Vibrant Teal (#0D9488).
+  """
+  clamped = max(0.05, min(1.0, norm_val))
+  alpha = round(0.10 + clamped * 0.78, 2)
+  if palette == "indigo":
+    bg = f"rgba(79, 70, 229, {alpha})"
+  else:
+    bg = f"rgba(13, 148, 136, {alpha})"
+  text_col = "#FFFFFF" if alpha >= 0.52 else "var(--text-primary)"
+  return f"background-color:{bg};color:{text_col};"
+
+
 def render_similarity_gallery(similarity_data: dict[str, Any]) -> str:
-  """Render responsive analog gallery and filter controls."""
+  """Render high-contrast similarity heatmap matrix and flat Bento analog grid."""
   molecules = similarity_data.get("molecules", [])
   total_count = len(molecules)
 
   cards = []
+  heatmap_rows = []
+
   for idx, mol in enumerate(molecules):
     cid = mol.get("molecule_chembl_id") or f"ANALOG_{idx+1}"
     name = mol.get("pref_name") or "Unspecified Analog"
@@ -48,54 +65,72 @@ def render_similarity_gallery(similarity_data: dict[str, Any]) -> str:
     props = mol.get("molecule_properties") or {}
     mwt = float(props.get("full_mwt") or 0.0)
     alogp = float(props.get("alogp") or 0.0)
+    psa = float(props.get("psa") or 0.0)
+    hbd = int(props.get("hbd") or 0)
+    hba = int(props.get("hba") or 0)
     max_phase = mol.get("max_phase")
     phase_str = f"Phase {max_phase}" if max_phase is not None else "Preclinical"
 
-    # Color code similarity bar
+    # DESIGN.md palette bar colors: Functional Emerald (#059669), Vibrant Teal (#0D9488), Energetic Amber (#D97706)
     if sim >= 90.0:
-      bar_color = "bg-emerald-500"
-      badge_color = "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-900"
-    elif sim >= 80.0:
-      bar_color = "bg-blue-500"
-      badge_color = "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-900"
+      bar_color = "#059669"
+    elif sim >= 84.0:
+      bar_color = "#0D9488"
     else:
-      bar_color = "bg-amber-500"
-      badge_color = "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-900"
+      bar_color = "#D97706"
+
+    # Heatmap row normalized intensities
+    sim_norm = max(0.0, min(1.0, (sim - 60.0) / 40.0))
+    mwt_norm = max(0.0, min(1.0, mwt / 500.0))
+    alogp_norm = max(0.0, min(1.0, alogp / 5.0))
+    psa_norm = max(0.0, min(1.0, psa / 140.0))
+    hb_norm = max(0.0, min(1.0, (hbd + hba) / 10.0))
+
+    heatmap_rows.append(
+        f"""<tr class="table-row analog-heatmap-row" data-similarity="{sim:.1f}" data-mwt="{mwt:.1f}">
+          <td class="cell-mono" style="font-weight:600">{html.escape(cid)}</td>
+          <td class="cell-mono">{html.escape(name)}</td>
+          <td class="cell-mono heatmap-cell" style="{_heatmap_style(sim_norm, 'teal')}">{sim:.1f}%</td>
+          <td class="cell-mono heatmap-cell" style="{_heatmap_style(mwt_norm, 'indigo')}">{mwt:.1f}</td>
+          <td class="cell-mono heatmap-cell" style="{_heatmap_style(alogp_norm, 'indigo')}">{alogp:.2f}</td>
+          <td class="cell-mono heatmap-cell" style="{_heatmap_style(psa_norm, 'teal')}">{psa:.1f}</td>
+          <td class="cell-mono heatmap-cell" style="{_heatmap_style(hb_norm, 'indigo')}">{hbd} / {hba}</td>
+        </tr>"""
+    )
 
     cards.append(
         f"""
-        <div class="analog-card border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-white dark:bg-slate-950 flex flex-col justify-between hover:shadow-md transition-shadow" data-similarity="{sim:.1f}" data-mwt="{mwt:.1f}">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-2">
-              <span class="px-2 py-0.5 text-xs font-mono font-bold rounded bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">{html.escape(cid)}</span>
-              <span class="px-2 py-0.5 text-[11px] font-semibold rounded-full border {badge_color}">{sim_pct} Match</span>
+        <div class="analog-card" data-similarity="{sim:.1f}" data-mwt="{mwt:.1f}">
+          <div class="analog-card-top">
+            <div class="analog-id-row">
+              <span class="mono-id">{html.escape(cid)}</span>
+              <span class="mono-match" style="color:{bar_color}">{sim_pct} Match</span>
             </div>
-            <h4 class="text-sm font-semibold text-slate-900 dark:text-white truncate mb-1" title="{html.escape(name)}">{html.escape(name)}</h4>
-            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mb-3 overflow-hidden">
-              <div class="{bar_color} h-1.5 rounded-full" style="width: {min(100.0, sim):.1f}%"></div>
+            <h4 class="analog-name" title="{html.escape(name)}">{html.escape(name)}</h4>
+            <div class="sim-bar-track">
+              <div class="sim-bar-fill" style="width:{min(100.0, sim):.1f}%;background-color:{bar_color}"></div>
             </div>
-
-            <!-- Structure sketch placeholder / vector -->
-            <div class="h-28 bg-slate-50 dark:bg-slate-900 rounded border border-slate-100 dark:border-slate-800 flex items-center justify-center p-2 mb-3 text-center">
-              <span class="text-xs font-mono text-slate-400 break-all line-clamp-3">{html.escape(smiles) if smiles else "Structure coordinates unavailable"}</span>
-            </div>
-
-            <!-- Chemical stats grid -->
-            <div class="grid grid-cols-2 gap-2 text-xs mb-3">
-              <div class="p-1.5 rounded bg-slate-50 dark:bg-slate-800/50">
-                <span class="text-[10px] text-slate-500 block">MW</span>
-                <span class="font-mono font-medium text-slate-800 dark:text-slate-200">{mwt:.1f} Da</span>
-              </div>
-              <div class="p-1.5 rounded bg-slate-50 dark:bg-slate-800/50">
-                <span class="text-[10px] text-slate-500 block">AlogP</span>
-                <span class="font-mono font-medium text-slate-800 dark:text-slate-200">{alogp:.2f}</span>
-              </div>
+            <div class="analog-smiles" title="{html.escape(smiles)}">
+              {html.escape(smiles) if smiles else "Structure coordinates unavailable"}
             </div>
           </div>
 
-          <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px]">
-            <span class="text-slate-500 font-medium">{html.escape(phase_str)}</span>
-            <span class="text-slate-400 font-mono text-[10px] truncate max-w-[120px]" title="{html.escape(inchi_key)}">{html.escape(inchi_key)}</span>
+          <div class="analog-metrics-row">
+            <div class="analog-metric-pair">
+              <span class="descriptor-label">MW</span>
+              <span class="mono-val">{mwt:.1f} Da</span>
+            </div>
+            <div class="analog-metric-pair">
+              <span class="descriptor-label">AlogP</span>
+              <span class="mono-val">{alogp:.2f}</span>
+            </div>
+            <div class="analog-metric-pair">
+              <span class="descriptor-label">Stage</span>
+              <span class="mono-val">{html.escape(phase_str)}</span>
+            </div>
+          </div>
+          <div class="analog-footer-row">
+            <span class="mono-secondary" title="{html.escape(inchi_key)}">{html.escape(inchi_key)}</span>
           </div>
         </div>
         """
@@ -104,43 +139,70 @@ def render_similarity_gallery(similarity_data: dict[str, Any]) -> str:
   cards_html = (
       "".join(cards)
       if cards
-      else '<div class="col-span-full py-10 text-center text-slate-400 text-sm">No chemical analogs found for the specified query.</div>'
+      else '<div class="empty-state">No chemical analogs found for the specified query.</div>'
+  )
+  heatmap_html = (
+      "".join(heatmap_rows)
+      if heatmap_rows
+      else '<tr><td colspan="7" class="empty-table-cell">No analog records available</td></tr>'
   )
 
   gallery_html = f"""
-<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden mb-8">
-  <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/40">
-    <div class="flex items-center space-x-3">
-      <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900">Analog Search</span>
-      <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Chemical Similarity & Concordance Grid</h2>
+<section class="bento-panel" id="similarity-section">
+  <div class="bento-header">
+    <div class="header-title-group">
+      <h2 class="panel-title">Chemical Similarity &amp; Descriptor Matrix</h2>
+      <span class="mono-meta">Showing <span id="visible-analog-count">{total_count}</span> of {total_count} analogs</span>
     </div>
-    <div class="flex items-center space-x-2 text-xs">
-      <span class="text-slate-500">Showing <span id="visible-analog-count" class="font-bold text-slate-800 dark:text-slate-200">{total_count}</span> of {total_count} analogs</span>
+    <div class="filter-controls-bar">
+      <div class="slider-group">
+        <label for="similarity-filter" class="slider-label">Min Similarity</label>
+        <input type="range" id="similarity-filter" min="50" max="100" value="70" step="1" oninput="updateAnalogFilters()" class="range-slider"/>
+        <span id="similarity-filter-val" class="mono-slider-val">70%</span>
+      </div>
+      <div class="slider-group">
+        <label for="mwt-filter" class="slider-label">Max MW</label>
+        <input type="range" id="mwt-filter" min="100" max="800" value="800" step="25" oninput="updateAnalogFilters()" class="range-slider"/>
+        <span id="mwt-filter-val" class="mono-slider-val">800 Da</span>
+      </div>
+      <button type="button" onclick="resetAnalogFilters()" class="btn-control">Reset</button>
     </div>
   </div>
 
-  <!-- Interactive Controls Bar -->
-  <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-800/20 flex flex-wrap items-center gap-6 text-xs">
-    <div class="flex items-center space-x-3">
-      <label for="similarity-filter" class="font-medium text-slate-700 dark:text-slate-300">Minimum Similarity:</label>
-      <input type="range" id="similarity-filter" min="50" max="100" value="70" step="1" oninput="updateAnalogFilters()" class="w-32 accent-blue-600"/>
-      <span id="similarity-filter-val" class="font-mono font-bold text-blue-600 dark:text-blue-400 w-10">70%</span>
+  <!-- High-Contrast Physicochemical & Similarity Heatmap Matrix -->
+  <div class="bento-subcell no-padding">
+    <div class="subcell-toolbar padded-toolbar">
+      <h3 class="cell-title">Normalized Descriptor Heatmap Matrix</h3>
+      <div class="viz-legend-inline">
+        <span class="legend-item"><span class="legend-dot" style="background:#0D9488"></span>Similarity / TPSA Density</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#4F46E5"></span>MW / Lipophilicity / H-Bond Scale</span>
+      </div>
     </div>
-
-    <div class="flex items-center space-x-3">
-      <label for="mwt-filter" class="font-medium text-slate-700 dark:text-slate-300">Max MW (Da):</label>
-      <input type="range" id="mwt-filter" min="100" max="800" value="800" step="25" oninput="updateAnalogFilters()" class="w-32 accent-blue-600"/>
-      <span id="mwt-filter-val" class="font-mono font-bold text-blue-600 dark:text-blue-400 w-14">800 Da</span>
+    <div class="table-scroll-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ChEMBL ID</th>
+            <th>Compound</th>
+            <th>Tanimoto Similarity</th>
+            <th>MW (Da)</th>
+            <th>AlogP</th>
+            <th>TPSA (&Aring;&sup2;)</th>
+            <th>HBD / HBA</th>
+          </tr>
+        </thead>
+        <tbody>
+          {heatmap_html}
+        </tbody>
+      </table>
     </div>
-
-    <button type="button" onclick="resetAnalogFilters()" class="px-2.5 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">Reset Filters</button>
   </div>
 
-  <!-- Analog Card Grid -->
-  <div id="analog-grid" class="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+  <!-- Flat Hairline Analog Grid -->
+  <div id="analog-grid" class="analog-bento-grid">
     {cards_html}
   </div>
-</div>
+</section>
 """
   return gallery_html
 

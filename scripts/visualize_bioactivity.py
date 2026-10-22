@@ -15,7 +15,8 @@
 """SAR and bioactivity distribution visualizer component.
 
 Transforms normalized bioactivity records into interactive potency histograms,
-target affinity comparisons, and filterable data tables.
+target affinity comparisons, and filterable monospace data tables strictly
+adhering to DESIGN.md guidelines.
 """
 
 from __future__ import annotations
@@ -25,19 +26,11 @@ import html
 import json
 import math
 import os
-import sys
 from typing import Any
 
 
 def calculate_pic50(normalized_val_nm: float | None) -> float | None:
-  """Calculate pIC50 = 9 - log10(nM).
-
-  Args:
-    normalized_val_nm: Value in nM.
-
-  Returns:
-    Calculated pIC50 rounded to 2 decimals, or None if invalid.
-  """
+  """Calculate pIC50 = 9 - log10(nM)."""
   if normalized_val_nm is None:
     return None
   try:
@@ -59,7 +52,6 @@ def process_activities(raw_activities: list[dict[str, Any]]) -> dict[str, Any]:
   for rec in raw_activities:
     std_val = rec.get("normalized_value_nM")
     if std_val is None:
-      # Try standard_value if normalized_value_nM is missing
       try:
         raw_std = rec.get("standard_value")
         raw_units = (rec.get("standard_units") or "").strip().lower()
@@ -77,16 +69,15 @@ def process_activities(raw_activities: list[dict[str, Any]]) -> dict[str, Any]:
     if pic50 is None:
       pic50 = calculate_pic50(std_val)
 
-    # Potency tier
     if std_val is not None:
       if std_val < 100.0:
-        tier = "High Potency (<100 nM)"
+        tier = "High (<100 nM)"
         potency_counts["high"] += 1
       elif std_val <= 10000.0:
-        tier = "Moderate (100 - 10,000 nM)"
+        tier = "Moderate (100-10,000 nM)"
         potency_counts["moderate"] += 1
       else:
-        tier = "Weak / Inactive (>10,000 nM)"
+        tier = "Low (>10,000 nM)"
         potency_counts["weak"] += 1
     else:
       tier = "Unclassified"
@@ -102,6 +93,7 @@ def process_activities(raw_activities: list[dict[str, Any]]) -> dict[str, Any]:
         "normalized_value_nM": std_val,
         "pIC50": pic50,
         "potency_tier": tier,
+        "is_inactive_anomaly": bool(std_val is not None and std_val > 10000.0),
         "document_chembl_id": rec.get("document_chembl_id") or "N/A",
     }
     processed.append(item)
@@ -111,7 +103,6 @@ def process_activities(raw_activities: list[dict[str, Any]]) -> dict[str, Any]:
       t_name = item["target_pref_name"]
       target_affinities.setdefault(t_name, []).append(pic50)
 
-  # Stats
   if pic50_values:
     pic50_values.sort()
     n = len(pic50_values)
@@ -138,15 +129,14 @@ def process_activities(raw_activities: list[dict[str, Any]]) -> dict[str, Any]:
   }
 
 
-def generate_histogram_svg(pic50_values: list[float], width: int = 400, height: int = 220) -> str:
-  """Generate an SVG histogram of pIC50 values."""
+def generate_histogram_svg(pic50_values: list[float], width: int = 420, height: int = 230) -> str:
+  """Generate an SVG histogram of pIC50 values using the DESIGN.md palette."""
   if not pic50_values:
-    return f"""<svg viewBox="0 0 {width} {height}" class="w-full h-full flex items-center justify-center">
+    return f"""<svg viewBox="0 0 {width} {height}" width="100%" height="100%">
       <rect width="{width}" height="{height}" fill="transparent"/>
-      <text x="{width/2}" y="{height/2}" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#94a3b8">No numerical pIC50 records available</text>
+      <text x="{width/2}" y="{height/2}" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--text-secondary, #787774)">No numerical pIC50 records available</text>
     </svg>"""
 
-  # Define bins: 3.0 to 11.0 in steps of 1.0 (8 bins)
   bin_min, bin_max = 3.0, 11.0
   num_bins = 8
   bin_width = (bin_max - bin_min) / num_bins
@@ -161,58 +151,69 @@ def generate_histogram_svg(pic50_values: list[float], width: int = 400, height: 
     bins[idx] += 1
 
   max_count = max(bins) if max(bins) > 0 else 1
-  margin_left = 35
-  margin_bottom = 30
-  margin_top = 20
-  margin_right = 15
+  margin_left = 36
+  margin_bottom = 34
+  margin_top = 22
+  margin_right = 16
 
   plot_w = width - margin_left - margin_right
   plot_h = height - margin_top - margin_bottom
   bar_w = plot_w / num_bins
 
+  grid_lines = []
+  for frac in (0.25, 0.5, 0.75, 1.0):
+    gy = margin_top + plot_h * (1.0 - frac)
+    grid_lines.append(
+        f'<line x1="{margin_left}" y1="{gy:.1f}" x2="{width - margin_right}" y2="{gy:.1f}" stroke="var(--chart-grid, #E7E5E4)" stroke-width="1" stroke-dasharray="2,2"/>'
+    )
+
   svg_bars = []
   svg_labels = []
 
   for i, count in enumerate(bins):
-    x = margin_left + i * bar_w + 3
-    bw = max(2, bar_w - 6)
+    x = margin_left + i * bar_w + 4
+    bw = max(2, bar_w - 8)
     bh = (count / max_count) * (plot_h - 10)
     y = margin_top + plot_h - bh
 
-    # Color code by potency: pIC50 >= 7.0 is emerald/blue, 5-7 is amber, <5 is slate
     mid_bin = bin_min + (i + 0.5) * bin_width
-    fill_color = "#3b82f6" if mid_bin >= 7.0 else ("#f59e0b" if mid_bin >= 5.0 else "#94a3b8")
+    if mid_bin >= 8.0:
+      fill_color = "#059669"
+    elif mid_bin >= 7.0:
+      fill_color = "#0D9488"
+    elif mid_bin >= 5.0:
+      fill_color = "#D97706"
+    else:
+      fill_color = "#E11D48"
 
     svg_bars.append(
         f'<rect x="{x:.1f}" y="{y:.1f}" width="{bw:.1f}" height="{bh:.1f}" fill="{fill_color}" rx="3"/>'
     )
     if count > 0:
       svg_bars.append(
-          f'<text x="{x + bw/2:.1f}" y="{y - 4:.1f}" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">{count}</text>'
+          f'<text x="{x + bw/2:.1f}" y="{y - 5:.1f}" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="var(--text-primary, #1C1917)" text-anchor="middle">{count}</text>'
       )
 
     lbl_x = margin_left + i * bar_w + bar_w / 2
     lbl_text = f"{bin_min + i * bin_width:.0f}"
     svg_labels.append(
-        f'<text x="{lbl_x:.1f}" y="{height - 12}" font-family="system-ui, sans-serif" font-size="10" fill="#64748b" text-anchor="middle">{lbl_text}</text>'
+        f'<text x="{lbl_x:.1f}" y="{height - 16}" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--text-secondary, #787774)" text-anchor="middle">{lbl_text}</text>'
     )
 
   svg = f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="100%" height="100%">
   <rect width="{width}" height="{height}" fill="transparent"/>
-  <!-- Axes lines -->
-  <line x1="{margin_left}" y1="{margin_top + plot_h}" x2="{width - margin_right}" y2="{margin_top + plot_h}" stroke="#cbd5e1" stroke-width="1.5"/>
-  <line x1="{margin_left}" y1="{margin_top}" x2="{margin_left}" y2="{margin_top + plot_h}" stroke="#cbd5e1" stroke-width="1.5"/>
-  <!-- Bars -->
+  {"".join(grid_lines)}
+  <line x1="{margin_left}" y1="{margin_top + plot_h}" x2="{width - margin_right}" y2="{margin_top + plot_h}" stroke="var(--chart-grid, #E7E5E4)" stroke-width="1.5"/>
+  <line x1="{margin_left}" y1="{margin_top}" x2="{margin_left}" y2="{margin_top + plot_h}" stroke="var(--chart-grid, #E7E5E4)" stroke-width="1.5"/>
   {"".join(svg_bars)}
-  <!-- X Labels -->
   {"".join(svg_labels)}
-  <text x="{width/2}" y="{height - 2}" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#64748b" text-anchor="middle">-log10 Affinity (pIC50 / pKi)</text>
+  <text x="{width/2}" y="{height - 2}" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--text-secondary, #787774)" text-anchor="middle">-log10 Affinity (pIC50 / pKi)</text>
 </svg>"""
   return svg
 
 
 def render_bioactivity_card(activity_data: dict[str, Any]) -> str:
-  """Render complete bioactivity visualizer section."""
+  """Render flat Bento bioactivity distribution and monospace table section."""
   raw_list = activity_data.get("activities", [])
   processed = process_activities(raw_list)
   records = processed["records"]
@@ -220,107 +221,117 @@ def render_bioactivity_card(activity_data: dict[str, Any]) -> str:
   counts = processed["potency_counts"]
   hist_svg = generate_histogram_svg(processed["pic50_values"])
 
-  # Generate table rows
   table_rows = []
   for r in records[:50]:
-    val_str = f"{r['normalized_value_nM']:.2f} nM" if r["normalized_value_nM"] is not None else "N/A"
+    val_str = f"{r['normalized_value_nM']:.2f}" if r["normalized_value_nM"] is not None else "N/A"
     pic50_str = f"{r['pIC50']:.2f}" if r["pIC50"] is not None else "-"
-    badge_bg = (
-        "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
-        if "High" in r["potency_tier"]
-        else ("bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300" if "Moderate" in r["potency_tier"] else "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300")
-    )
+    if r["is_inactive_anomaly"]:
+      anomaly_cell = '<span class="status-alert alert-critical">&gt;10 &mu;M Threshold</span>'
+      val_color = "color:#E11D48;font-weight:600;"
+    else:
+      anomaly_cell = f'<span class="mono-secondary">{html.escape(r["assay_chembl_id"])}</span>'
+      val_color = "color:#059669;font-weight:600;" if (r["pIC50"] and r["pIC50"] >= 7.0) else "color:#D97706;"
+
     table_rows.append(
-        f"""<tr class="border-b border-slate-100 dark:border-slate-800/80 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 text-xs">
-          <td class="py-2.5 px-3 font-mono font-medium text-slate-700 dark:text-slate-300">{html.escape(str(r['activity_id']))}</td>
-          <td class="py-2.5 px-3 text-slate-900 dark:text-slate-100 font-medium max-w-[200px] truncate" title="{html.escape(r['target_pref_name'])}">{html.escape(r['target_pref_name'])}</td>
-          <td class="py-2.5 px-3 text-slate-500 italic">{html.escape(r['target_organism'])}</td>
-          <td class="py-2.5 px-3 font-semibold text-blue-600 dark:text-blue-400">{html.escape(r['standard_type'])}</td>
-          <td class="py-2.5 px-3 font-mono text-slate-800 dark:text-slate-200">{html.escape(r['standard_relation'])} {val_str}</td>
-          <td class="py-2.5 px-3 font-mono font-semibold text-slate-900 dark:text-white">{pic50_str}</td>
-          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold {badge_bg}">{html.escape(r['potency_tier'])}</span></td>
-          <td class="py-2.5 px-3 font-mono text-slate-400">{html.escape(r['assay_chembl_id'])}</td>
+        f"""<tr class="table-row">
+          <td class="cell-mono">{html.escape(str(r['activity_id']))}</td>
+          <td class="cell-mono cell-truncate" title="{html.escape(r['target_pref_name'])}">{html.escape(r['target_pref_name'])}</td>
+          <td class="cell-mono mono-secondary">{html.escape(r['target_organism'])}</td>
+          <td class="cell-mono" style="color:#4F46E5;font-weight:600;">{html.escape(r['standard_type'])}</td>
+          <td class="cell-mono">{html.escape(r['standard_relation'])} {val_str}</td>
+          <td class="cell-mono" style="{val_color}">{pic50_str}</td>
+          <td class="cell-mono">{anomaly_cell}</td>
         </tr>"""
     )
 
   rows_html = (
       "".join(table_rows)
       if table_rows
-      else '<tr><td colspan="8" class="py-6 text-center text-slate-400">No bioactivity measurements found</td></tr>'
+      else '<tr><td colspan="7" class="empty-table-cell">No bioactivity measurements found</td></tr>'
   )
 
   card_html = f"""
-<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden mb-8">
-  <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/40">
-    <div class="flex items-center space-x-3">
-      <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-md bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-900">SAR Profile</span>
-      <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Bioactivity & Potency Distribution</h2>
+<section class="bento-panel" id="bioactivity-section">
+  <div class="bento-header">
+    <div class="header-title-group">
+      <h2 class="panel-title">Bioactivity &amp; Potency Distribution</h2>
+      <span class="mono-meta">Concentration normalized to nM</span>
     </div>
-    <div class="flex items-center space-x-2 text-xs">
-      <span class="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">Assays: {len(records)}</span>
-      <span class="px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 font-medium font-mono">High Potency: {counts['high']}</span>
+    <div class="control-group">
+      <input type="text" id="activity-table-search" placeholder="Filter target or assay..." oninput="filterActivityTable()" class="input-filter"/>
+      <button type="button" onclick="resetActivityFilter()" class="btn-control">Reset</button>
     </div>
   </div>
 
-  <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-    <!-- Left Column: Summary Metrics & Histogram -->
-    <div class="lg:col-span-5 flex flex-col space-y-4">
-      <div class="grid grid-cols-3 gap-2">
-        <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-center">
-          <span class="text-[11px] text-slate-500 font-medium block">Median pIC50</span>
-          <span class="text-lg font-bold font-mono text-slate-800 dark:text-white">{stats['median']}</span>
-        </div>
-        <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-center">
-          <span class="text-[11px] text-slate-500 font-medium block">Max Potency</span>
-          <span class="text-lg font-bold font-mono text-emerald-600 dark:text-emerald-400">{stats['max']}</span>
-        </div>
-        <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-center">
-          <span class="text-[11px] text-slate-500 font-medium block">Total Screened</span>
-          <span class="text-lg font-bold font-mono text-blue-600 dark:text-blue-400">{stats['count']}</span>
+  <!-- Flat Metric Summary Strip -->
+  <div class="metric-strip-4">
+    <div class="metric-cell">
+      <span class="descriptor-label">Assays Screened</span>
+      <span class="metric-big" style="color:#0D9488">{stats['count']}</span>
+    </div>
+    <div class="metric-cell">
+      <span class="descriptor-label">Median pIC50</span>
+      <span class="metric-big">{stats['median']}</span>
+    </div>
+    <div class="metric-cell">
+      <span class="descriptor-label">Peak Potency (pIC50)</span>
+      <span class="metric-big" style="color:#059669">{stats['max']}</span>
+    </div>
+    <div class="metric-cell">
+      <span class="descriptor-label">Sub-100 nM Hits</span>
+      <span class="metric-big" style="color:#4F46E5">{counts['high']}</span>
+    </div>
+  </div>
+
+  <div class="bento-grid-5-7">
+    <!-- Left Cell: Potency Histogram -->
+    <div class="bento-cell">
+      <div class="subcell-toolbar padded-toolbar">
+        <h3 class="cell-title">Potency Spread (pIC50)</h3>
+        <div class="control-group">
+          <button type="button" id="hist-zoom-in" onclick="zoomView('hist', 1.25)" class="btn-control" title="Zoom In">Zoom In</button>
+          <button type="button" id="hist-zoom-out" onclick="zoomView('hist', 0.8)" class="btn-control" title="Zoom Out">Zoom Out</button>
+          <button type="button" id="hist-reset" onclick="resetView('hist')" class="btn-control" title="Reset View">Reset View</button>
         </div>
       </div>
-
-      <div class="border border-slate-200 dark:border-slate-800 rounded-lg p-3 bg-white dark:bg-slate-950">
-        <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-800">
-          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Potency Spread (pIC50)</span>
-          <span class="text-[11px] text-slate-400 font-mono">Count by Bin</span>
-        </div>
-        <div class="h-56 flex items-center justify-center">
+      <div id="hist-svg-container" class="viz-canvas-hist interactive-viewport" data-zoom-target="hist">
+        <div id="hist-stage" class="zoom-stage">
           {hist_svg}
         </div>
       </div>
-    </div>
-
-    <!-- Right Column: Interactive Searchable Table -->
-    <div class="lg:col-span-7 flex flex-col">
-      <div class="border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-950 overflow-hidden flex flex-col h-full">
-        <div class="p-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-900/40">
-          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Normalized Assay Data (nM)</span>
-          <input type="text" id="activity-table-search" placeholder="Filter target, assay..." oninput="filterActivityTable()" class="px-2.5 py-1 text-xs rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500"/>
-        </div>
-        <div class="overflow-x-auto max-h-[320px] overflow-y-auto">
-          <table id="activity-table" class="w-full text-left border-collapse">
-            <thead class="bg-slate-50 dark:bg-slate-900 sticky top-0 border-b border-slate-200 dark:border-slate-800 text-[11px] uppercase tracking-wider text-slate-500">
-              <tr>
-                <th class="py-2 px-3">ID</th>
-                <th class="py-2 px-3">Target</th>
-                <th class="py-2 px-3">Organism</th>
-                <th class="py-2 px-3">Type</th>
-                <th class="py-2 px-3">Standard Val (nM)</th>
-                <th class="py-2 px-3">pIC50</th>
-                <th class="py-2 px-3">Classification</th>
-                <th class="py-2 px-3">Assay</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows_html}
-            </tbody>
-          </table>
+      <div class="viz-legend" style="padding: 8px 16px 12px; margin-top: 0;">
+        <div class="viz-legend-inline">
+          <span class="legend-item"><span class="legend-dot" style="background:#059669"></span>&ge;8.0</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#0D9488"></span>7.0–7.9</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#D97706"></span>5.0–6.9</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#E11D48"></span>&lt;5.0</span>
         </div>
       </div>
     </div>
+
+    <!-- Right Cell: Monospace Bioactivity Table -->
+    <div class="bento-cell no-padding">
+      <div class="table-scroll-container">
+        <table id="activity-table" class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Target</th>
+              <th>Organism</th>
+              <th>Type</th>
+              <th>Value (nM)</th>
+              <th>pIC50</th>
+              <th>Assay / Alert</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows_html}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-</div>
+</section>
 """
   return card_html
 
