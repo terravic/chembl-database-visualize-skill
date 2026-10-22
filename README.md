@@ -7,16 +7,16 @@ The `chembl-database-visualize` skill provides programmatic query capabilities a
 
 The workflow diagram above illustrates the end-to-end architecture:
 1. **Data Inputs**: Ingests compound identifiers (ChEMBL IDs), biological target IDs, SMILES chemical notation, and bioactivity assay criteria.
-2. **Skill Engine**: Performs automated nanomolar (nM) unit normalization, Lipinski Rule of 5 physicochemical calculations, SAR bioactivity binning, and network graph modeling.
-3. **Interactive Outputs and Dashboard**: Emits standardized JSON/SDF data artifacts and compiles a standalone HTML/JavaScript dashboard featuring synchronized 2D chemical topologies, 3D WebGL rotating conformer viewports, and physicochemical radar charts.
+2. **Skill Engine**: Performs automated nanomolar (nM) unit normalization, Lipinski Rule of 5 physicochemical calculations, SAR bioactivity binning, and structural relationship network modeling.
+3. **Interactive Outputs and Dashboard**: Emits standardized JSON/SDF data artifacts and compiles a standalone HTML/JavaScript Bento dashboard featuring synchronized 2D chemical topologies, interactive 3D conformer diagrams, physicochemical radar charts, relationship node maps, and descriptor heatmap matrices.
 
 ### Key Capabilities
-- **3D Conformer and 2D Vector Structural Visualizations**: Renders interactive WebGL conformers via 3Dmol.js alongside 2D vector diagrams with element-specific color coding.
-- **Physicochemical Profiling**: Automated calculation of Lipinski Rule of 5 parameters (MW, AlogP, HBD, HBA, Rotatable Bonds, TPSA) with rule-violation detection and an SVG spider/radar chart.
-- **SAR and Bioactivity Distributions**: Standardization of bioactivity measurements into nanomolar (nM) concentrations, computation of negative logarithmic affinity (pIC50), and rendering of potency histograms.
-- **Clinical Development Tracking**: Stage timelines mapping compounds across Preclinical, Phase I, Phase II, Phase III, and Approved statuses, coupled with Mechanism of Action and ATC/MeSH indication cards.
-- **Chemical Similarity and Analog Matrix**: Tanimoto similarity scoring and dynamic client-side filtering sliders for structure-activity exploration.
-- **Interactive Force-Directed Network Graph**: Physics simulation mapping compound-target-assay connectivity with interactive node repositioning.
+- **3D Structural Data Diagram and 2D Vector Topologies**: Renders interactive 3D molecular conformers (`Sticks`, `Ball & Stick`, `Spheres`, and `Surface` styles with `Auto-Spin`, `Zoom In`, `Zoom Out`, and `Reset View` controls) alongside 2D vector diagrams with element-specific color coding and functional group highlight toggles.
+- **Physicochemical Profiling**: Automated calculation of Lipinski Rule of 5 parameters (MW, AlogP, HBD, HBA, Rotatable Bonds, TPSA) with exception-based violation alerts, an interactive SVG radar chart, and a flat 6-cell descriptor matrix.
+- **SAR and Bioactivity Distributions**: Standardization of bioactivity measurements into nanomolar (nM) concentrations, computation of negative logarithmic affinity (pIC50), interactive potency histograms, and filterable monospace assay tables.
+- **Clinical Development Tracking**: Stage timelines mapping compounds across Preclinical, Phase I, Phase II, Phase III, and Approved statuses, coupled with Mechanism of Action and ATC/MeSH indication tables.
+- **Chemical Similarity and Descriptor Heatmap Matrix**: Tanimoto similarity scoring, a high-contrast `Normalized Descriptor Heatmap Matrix`, hairline-divided analog cards, and real-time client-side filtering sliders (`Min Similarity` and `Max MW`).
+- **Interactive Relationship Node Map**: Force-directed SVG graph mapping query compound and analog connectivity with node dragging, hover tooltips, `Zoom In`, `Zoom Out`, `Reset View`, `Perturb`, and `Pause` controls.
 - **Deterministic Offline Testing**: Built-in `--mock` engine executing synthetic test fixtures without external network dependencies.
 - **Open-Source Licensing**: Released under the Apache License 2.0 with automated compliance guards for upstream EMBL-EBI CC BY-SA terms.
 
@@ -39,6 +39,7 @@ The workflow diagram above illustrates the end-to-end architecture:
 |   |-- skill_workflow_dashboard.jpg
 |   '-- structure_fallback.svg
 |-- dashboard.html
+|-- DESIGN.md
 |-- documents/
 |   '-- prd.md
 |-- LICENSE
@@ -103,7 +104,7 @@ This skill acts as an automated research assistant for exploring medicinal chemi
 - **Drug Profiles**: Look up any approved medicine or experimental molecule (such as Aspirin, Ibuprofen, or Imatinib) to inspect what conditions it treats, how it works in the body, and its 2D and 3D chemical structures.
 - **Drug-Likeness Rules**: Evaluate whether a molecule has physical and chemical properties suitable for oral administration according to standard pharmaceutical criteria (Lipinski's Rule of 5), measuring molecular weight, water/fat solubility balance, and structural flexibility.
 - **Target Potency**: Determine how strongly a molecule binds to a biological protein target (such as a receptor or enzyme). The skill converts experimental laboratory values from different studies into a unified scale (nanomolar concentrations and pIC50 scores).
-- **Related Compounds**: Identify chemical analogs--molecules that share similar structural backbones--and compare their differences in size, solubility, and clinical development stage.
+- **Related Compounds**: Identify chemical analogs--molecules that share similar structural backbones--and compare their differences in size, solubility, polar surface area, and clinical development stage.
 
 ### 3.2 Real-World Usage Scenarios
 
@@ -113,7 +114,7 @@ This skill acts as an automated research assistant for exploring medicinal chemi
 - **What the skill does**:
   The skill retrieves the clinical profile for Aspirin, identifies its approved indications (such as pain relief, fever reduction, and cardiovascular prophylaxis), extracts its mechanism of action (blocking Cyclooxygenase-1 and Cyclooxygenase-2 enzymes), verifies that it satisfies all four Lipinski oral drug-likeness criteria, and builds an interactive dashboard.
 - **How to explore the result**:
-  Open the generated file `./output/aspirin/dashboard.html` (or `./dashboard.html`) in any modern web browser. You can click and drag to rotate the 3D molecule, toggle functional group highlights on the 2D diagram, and switch between Light Mode and Dark Mode.
+  Open the generated file `./output/aspirin/dashboard.html` (or `./dashboard.html`) in any modern web browser. You can click and drag to rotate the 3D molecule in the `Structural Data Diagram`, switch between `Sticks`, `Ball & Stick`, `Spheres`, and `Surface` views, toggle functional group highlights on the `2D Chemical Structure`, use `Zoom In`, `Zoom Out`, and `Reset View` on any diagram, and switch between Light Mode and Dark Mode using the top-right theme button.
 
 #### Scenario 2: Evaluating Compounds Tested Against a Disease Protein (EGFR)
 - **Question to ask**:
@@ -121,15 +122,15 @@ This skill acts as an automated research assistant for exploring medicinal chemi
 - **What the skill does**:
   The skill collects experimental inhibition measurements (`IC50` values) across published screening studies, converts all concentration units to nanomolar (nM), calculates logarithmic affinity (`pIC50`), and groups the tested molecules into high, moderate, and weak potency categories.
 - **How to explore the result**:
-  The generated dashboard displays a potency distribution histogram, a searchable table of laboratory assays, and a summary of the strongest binding compounds.
+  The generated dashboard displays a `Potency Spread (pIC50)` histogram with `Zoom In`, `Zoom Out`, and `Reset View` controls, a 4-metric summary strip, and a searchable table of laboratory assays where you can filter by target or assay identifier in real time.
 
 #### Scenario 3: Discovering Chemically Similar Analogs
 - **Question to ask**:
   "Find molecules with a chemical structure similar to Aspirin and compare their molecular weight and clinical stage."
 - **What the skill does**:
-  The skill runs a chemical fingerprint similarity search, ranking related molecules from 0% to 100% structural similarity (Tanimoto score), and compiles an analog comparison gallery.
+  The skill runs a chemical fingerprint similarity search, ranking related molecules from 0% to 100% structural similarity (Tanimoto score), and compiles an analog comparison gallery and descriptor heatmap.
 - **How to explore the result**:
-  Open the dashboard and use the interactive sliders to filter the analog cards in real time by minimum similarity percentage (for example, 85% or higher) and maximum molecular weight, or drag nodes in the force-directed network graph to inspect structural relationships.
+  Open the dashboard and use the `Min Similarity` and `Max MW` sliders to filter both the `Normalized Descriptor Heatmap Matrix` and the analog cards in real time, or drag and zoom nodes in the `Interactive Relationship Node Map` to inspect structural relationships.
 
 ---
 
@@ -238,7 +239,7 @@ When integrating this skill into an AI agent system, the following prompt patter
   ```
 - **Delivered Output**:
   - Lists top analog hits (such as Salicylic Acid, Diflunisal, Salsalate) with similarity scores and molecular weights.
-  - Delivers `./output/analogs/dashboard.html` featuring interactive client-side sliders for similarity and molecular weight thresholding.
+  - Delivers `./output/analogs/dashboard.html` featuring the `Normalized Descriptor Heatmap Matrix` and interactive client-side sliders for similarity and molecular weight thresholding.
 
 #### Example 4: Multi-Target Indication and Mechanism Lookup
 - **User Prompt**:
@@ -266,9 +267,9 @@ When integrating this skill into an AI agent system, the following prompt patter
 ### 6.3 Modular Command-Line Utilities
 The individual components in `scripts/` can also be invoked independently:
 - `scripts/chembl_api.py`: Low-level rate-limited REST client for all ChEMBL API entities.
-- `scripts/visualize_compound.py`: Physicochemical property calculations and Lipinski scoring.
+- `scripts/visualize_compound.py`: Physicochemical property calculations, 2D/3D structure viewports, and Lipinski scoring.
 - `scripts/visualize_bioactivity.py`: Concentration normalization (nM), pIC50 computation, and potency binning.
-- `scripts/visualize_similarity.py`: Tanimoto similarity parsing and analog scoring.
+- `scripts/visualize_similarity.py`: Tanimoto similarity parsing, descriptor heatmap matrix generation, and analog scoring.
 - `scripts/generate_dashboard.py`: Single-page interactive HTML dashboard compiler.
 
 ---
@@ -288,6 +289,6 @@ ChEMBL bioactivity values, molecular properties, and predicted data are aggregat
 ### License
 This project is licensed under the **Apache License 2.0**. A copy of the full license text is provided in the [LICENSE](LICENSE) file located in the project root directory.
 
-- **Source Code and Documentation**: All Python scripts in `scripts/`, test suites in `tests/`, documentation files (`README.md`, `SKILL.md`, `documents/prd.md`), and configuration schemas in `assets/` and `references/` are released under the terms of the Apache License 2.0.
+- **Source Code and Documentation**: All Python scripts in `scripts/`, test suites in `tests/`, documentation files (`README.md`, `SKILL.md`, `DESIGN.md`, `documents/prd.md`), and configuration schemas in `assets/` and `references/` are released under the terms of the Apache License 2.0.
 - **Database Content Attribution**: Scientific data extracted from the European Bioinformatics Institute (EMBL-EBI) ChEMBL database is redistributed under **Creative Commons Attribution-ShareAlike (CC BY-SA 3.0 / CC BY-SA 4.0)**. Users must review and adhere to upstream ChEMBL licensing terms when utilizing or publishing datasets derived from this skill.
 - **License Registry**: The licensing terms and upstream references are cataloged in [`SKILL_LICENSES.md`](SKILL_LICENSES.md) and monitored via `.licenses/chembl_database_visualize_LICENSE.txt`.

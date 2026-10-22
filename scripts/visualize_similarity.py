@@ -16,7 +16,7 @@
 
 Transforms ChEMBL similarity and substructure search results into a high-contrast
 Vivid Indigo / Vibrant Teal heatmap matrix and flat Bento analog cells with
-real-time client-side filtering sliders strictly adhering to DESIGN.md.
+real-time client-side filtering sliders.
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ from typing import Any
 
 
 def _heatmap_style(norm_val: float, palette: str = "teal") -> str:
-  """Compute high-contrast gradient cell background & text color per DESIGN.md Section 5.
+  """Compute high-contrast gradient cell background and text color.
 
   Transitions from a soft desaturated tint into saturated Vivid Indigo (#4F46E5)
   or Vibrant Teal (#0D9488).
@@ -71,7 +71,7 @@ def render_similarity_gallery(similarity_data: dict[str, Any]) -> str:
     max_phase = mol.get("max_phase")
     phase_str = f"Phase {max_phase}" if max_phase is not None else "Preclinical"
 
-    # DESIGN.md palette bar colors: Functional Emerald (#059669), Vibrant Teal (#0D9488), Energetic Amber (#D97706)
+    # Palette bar colors: Functional Emerald (#059669), Vibrant Teal (#0D9488), Energetic Amber (#D97706)
     if sim >= 90.0:
       bar_color = "#059669"
     elif sim >= 84.0:

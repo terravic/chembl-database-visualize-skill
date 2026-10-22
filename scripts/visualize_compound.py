@@ -16,8 +16,7 @@
 
 Parses molecule JSON and structural files (SVG, SDF), calculates Lipinski Rule
 of 5 metrics and violation status, and generates standalone HTML components
-including an SVG radar chart and 2D/3D structure viewers strictly adhering to
-DESIGN.md guidelines.
+including an SVG radar chart and 2D/3D structure viewers.
 """
 
 from __future__ import annotations
@@ -246,7 +245,7 @@ def render_compound_card(
   has_3d = bool(sdf_content and ("V2000" in sdf_content or "V3000" in sdf_content or "M  END" in sdf_content))
   svg_display = render_color_chemical_svg(svg_content, chembl_id=chembl_id, smiles=smiles)
 
-  # Per DESIGN.md Section 1: Only display status indicator when in an error/violation state
+  # Display status indicator only when in an error/violation state
   violation_indicator = ""
   if metrics["violations"] > 0:
     alert_class = "alert-critical" if metrics["violations"] > 1 else "alert-warning"
@@ -277,7 +276,7 @@ def render_compound_card(
             <button type="button" id="toggle-fg-btn" onclick="toggleFunctionalGroupHighlights()" class="btn-control">Toggle Highlights</button>
           </div>
         </div>
-        <div id="chem-svg-container" class="viz-canvas-2d interactive-viewport" data-zoom-target="chem2d">
+        <div id="chem-svg-container" class="viz-viewport-2d interactive-viewport" data-zoom-target="chem2d">
           <div id="chem2d-stage" class="zoom-stage">
             {svg_display}
           </div>
@@ -304,7 +303,7 @@ def render_compound_card(
             <button type="button" id="style-btn-surface" data-style-btn="surface" aria-pressed="false" onclick="setViewerStyle('surface')" class="btn-control">Surface</button>
           </div>
         </div>
-        <div id="mol-3d-viewer" class="viz-canvas-3d" data-has-3d="{str(has_3d).lower()}">
+        <div id="mol-3d-viewer" class="viz-viewport-3d" data-has-3d="{str(has_3d).lower()}">
         </div>
         <div class="viz-legend">
           <span class="mono-meta">Drag to rotate 3D conformer &middot; Scroll or use buttons to zoom</span>
@@ -329,7 +328,7 @@ def render_compound_card(
             <button type="button" id="radar-reset" onclick="resetView('radar')" class="btn-control" title="Reset View">Reset View</button>
           </div>
         </div>
-        <div id="radar-svg-container" class="viz-canvas-radar interactive-viewport" data-zoom-target="radar">
+        <div id="radar-svg-container" class="viz-viewport-radar interactive-viewport" data-zoom-target="radar">
           <div id="radar-stage" class="zoom-stage">
             {radar_svg}
           </div>

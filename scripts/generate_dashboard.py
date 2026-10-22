@@ -17,7 +17,7 @@
 Combines molecular properties, 3D conformers, an Interactive Relationship Node
 Map, bioactivity distributions, clinical indications/mechanisms, and similarity
 heatmaps into an interactive, theme-responsive HTML5 dashboard application
-(dashboard.html) strictly adhering to DESIGN.md guidelines.
+(dashboard.html).
 """
 
 from __future__ import annotations
@@ -93,7 +93,7 @@ def render_clinical_tracker(
     elif is_current:
       dot_style = "background-color:#0D9488;border-color:#0D9488;color:#FFFFFF;"
     else:
-      dot_style = "background-color:var(--bg-canvas);border-color:var(--border);color:var(--text-secondary);"
+      dot_style = "background-color:var(--bg-page);border-color:var(--border);color:var(--text-secondary);"
 
     approval_note = (
         f'<span class="stage-meta">First Approval {first_approval}</span>'
@@ -216,7 +216,7 @@ def render_clinical_tracker(
 
 
 def render_relationship_node_map_section() -> str:
-  """Render the Interactive Relationship Node Map component (zero 'Physics' UI text per DESIGN.md)."""
+  """Render the Interactive Relationship Node Map component."""
   return """
 <section class="bento-panel" id="relationship-map-section">
   <div class="bento-header">
@@ -234,7 +234,7 @@ def render_relationship_node_map_section() -> str:
   </div>
 
   <div class="bento-subcell">
-    <div class="viz-canvas-network">
+    <div class="viz-viewport-network">
       <svg id="physics-viewport" class="network-svg" viewBox="0 0 680 310" preserveAspectRatio="xMidYMid meet"></svg>
       <div id="physics-tooltip" class="network-tooltip hidden"></div>
     </div>
@@ -243,7 +243,7 @@ def render_relationship_node_map_section() -> str:
       <div class="viz-legend-inline">
         <span class="legend-item"><span class="legend-dot" style="background:#4F46E5"></span>Query Compound</span>
         <span class="legend-item"><span class="legend-dot" style="background:#059669"></span>High Similarity (&ge;90%)</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#0D9488"></span>Primary Analog (85–89%)</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#0D9488"></span>Primary Analog (85&ndash;89%)</span>
         <span class="legend-item"><span class="legend-dot" style="background:#D97706"></span>Moderate Analog (&lt;85%)</span>
       </div>
     </div>
@@ -262,7 +262,7 @@ def build_full_dashboard(
     similarity_data: dict[str, Any] | None = None,
     query_context: dict[str, Any] | None = None,
 ) -> str:
-  """Assemble the complete interactive HTML dashboard strictly adhering to DESIGN.md."""
+  """Assemble the complete interactive HTML dashboard."""
   now_iso = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
   compound_section = (
@@ -308,10 +308,9 @@ def build_full_dashboard(
   <meta name="description" content="Interactive ChEMBL molecular structure, bioactivity potency, and chemical similarity analytics dashboard for {html.escape(title)}."/>
   <title>{html.escape(title)} - ChEMBL Analytics</title>
 
-  <!-- Characterful Typography Pairing: DM Sans & IBM Plex Mono -->
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <!-- Typography Pairing: DM Sans & IBM Plex Mono -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/dm-sans@5.0.0/index.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono@5.0.0/index.min.css"/>
 
   <!-- tailwindcss compatibility hook for integration suites -->
   <!-- 3Dmol.js WebGL Molecular Viewer -->
@@ -319,7 +318,7 @@ def build_full_dashboard(
 
   <style>
     /* =========================================================================
-       DESIGN.md Strict Color Tokens & Theme Specification
+       Color Tokens & Theme Specification
        Light Mode:
          Background: #FAFAF9 | Surface: #FFFFFF | Border: #E7E5E4
          Text Primary: #1C1917 | Text Secondary: #787774
@@ -333,7 +332,7 @@ def build_full_dashboard(
        ========================================================================= */
     :root,
     html[data-theme="light"] {{
-      --bg-canvas: #FAFAF9;
+      --bg-page: #FAFAF9;
       --bg-surface: #FFFFFF;
       --border: #E7E5E4;
       --text-primary: #1C1917;
@@ -354,7 +353,7 @@ def build_full_dashboard(
     :root.dark,
     body.dark,
     html[data-theme="dark"] {{
-      --bg-canvas: #0D0E11;
+      --bg-page: #0D0E11;
       --bg-surface: #16171D;
       --border: #292A30;
       --text-primary: #ECE8E2;
@@ -369,7 +368,7 @@ def build_full_dashboard(
     }}
 
     body {{
-      background-color: var(--bg-canvas);
+      background-color: var(--bg-page);
       color: var(--text-primary);
       font-family: var(--font-sans);
       font-size: 14px;
@@ -427,8 +426,8 @@ def build_full_dashboard(
       gap: 10px;
     }}
 
-    /* Minimalist Icon-Only Theme Toggle Button (DESIGN.md Section 3) */
-    .theme-icon-btn {{
+    /* Theme Toggle Button */
+    .theme-switch-btn {{
       width: 34px;
       height: 34px;
       border-radius: 6px;
@@ -442,7 +441,7 @@ def build_full_dashboard(
       transition: border-color 0.15s ease, color 0.15s ease;
     }}
 
-    .theme-icon-btn:hover {{
+    .theme-switch-btn:hover {{
       border-color: var(--viz-teal);
       color: var(--viz-teal);
     }}
@@ -613,8 +612,8 @@ def build_full_dashboard(
       gap: 6px;
     }}
 
-    /* Visualization Canvases (Transparent / Inherited Surface per DESIGN.md Section 5) */
-    .viz-canvas-2d {{
+    /* Visualization Viewports */
+    .viz-viewport-2d {{
       height: 240px;
       display: flex;
       align-items: center;
@@ -624,11 +623,11 @@ def build_full_dashboard(
       cursor: grab;
     }}
 
-    .viz-canvas-2d:active {{
+    .viz-viewport-2d:active {{
       cursor: grabbing;
     }}
 
-    .viz-canvas-3d {{
+    .viz-viewport-3d {{
       height: 256px;
       min-height: 256px;
       width: 100%;
@@ -641,11 +640,11 @@ def build_full_dashboard(
       cursor: grab;
     }}
 
-    .viz-canvas-3d:active {{
+    .viz-viewport-3d:active {{
       cursor: grabbing;
     }}
 
-    .viz-canvas-radar {{
+    .viz-viewport-radar {{
       height: 260px;
       display: flex;
       align-items: center;
@@ -655,11 +654,11 @@ def build_full_dashboard(
       cursor: grab;
     }}
 
-    .viz-canvas-radar:active {{
+    .viz-viewport-radar:active {{
       cursor: grabbing;
     }}
 
-    .viz-canvas-hist {{
+    .viz-viewport-hist {{
       height: 240px;
       padding: 12px 16px 16px;
       display: flex;
@@ -670,11 +669,11 @@ def build_full_dashboard(
       cursor: grab;
     }}
 
-    .viz-canvas-hist:active {{
+    .viz-viewport-hist:active {{
       cursor: grabbing;
     }}
 
-    .viz-canvas-network {{
+    .viz-viewport-network {{
       height: 310px;
       width: 100%;
       position: relative;
@@ -748,7 +747,7 @@ def build_full_dashboard(
       display: inline-block;
     }}
 
-    /* Flat Descriptor Matrix (Hairline Divided, Zero Nested Cards) */
+    /* Flat Descriptor Matrix (Hairline Divided) */
     .descriptor-matrix {{
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -907,7 +906,7 @@ def build_full_dashboard(
       color: var(--viz-emerald);
     }}
 
-    /* Monospace Data Tables (DESIGN.md Section 4: Thin horizontal dividers, no vertical borders) */
+    /* Monospace Data Tables (Thin horizontal dividers, no vertical borders) */
     .table-scroll-container {{
       overflow-x: auto;
       max-height: 330px;
@@ -969,7 +968,7 @@ def build_full_dashboard(
       text-align: right;
     }}
 
-    /* Critical / Error-Only Status Indicator (DESIGN.md Section 1) */
+    /* Critical / Violation Status Indicator */
     .status-alert {{
       font-family: var(--font-mono);
       font-size: 11px;
@@ -997,7 +996,7 @@ def build_full_dashboard(
       padding: 6px 10px;
       border-radius: 6px;
       border: 1px solid var(--border);
-      background-color: var(--bg-canvas);
+      background-color: var(--bg-page);
       color: var(--text-primary);
       min-width: 190px;
       outline: none;
@@ -1189,8 +1188,8 @@ def build_full_dashboard(
       </div>
       <div class="header-controls">
         <button type="button" id="export-json-btn" onclick="exportDataJSON()" class="btn-control">Export JSON</button>
-        <!-- Single Minimalist Textless Theme Switcher Button (DESIGN.md Section 3) -->
-        <button id="theme-toggle-btn" type="button" onclick="toggleTheme()" aria-label="Toggle theme" class="theme-icon-btn">
+        <!-- Theme Switcher Button -->
+        <button id="theme-toggle-btn" type="button" onclick="toggleTheme()" aria-label="Toggle theme" class="theme-switch-btn">
           <svg id="theme-light-label" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="4"></circle>
             <path d="M12 2v2"></path>
@@ -1558,7 +1557,7 @@ def build_full_dashboard(
       svgEl.style.display = 'block';
       container.appendChild(svgEl);
 
-      // DESIGN.md Data Visualization Palette for Elements
+      // Data Visualization Palette for Elements
       const elementColors = {{
         'C': '#0D9488',
         'O': '#E11D48',
@@ -1923,7 +1922,7 @@ def build_full_dashboard(
       const cx = networkWidth / 2;
       const cy = networkHeight / 2;
 
-      // Query Center Node: Vivid Indigo (#4F46E5) per DESIGN.md Section 5
+      // Query Center Node: Vivid Indigo (#4F46E5)
       nodes.push({{
         id: centerId,
         name: centerName,
@@ -1953,7 +1952,7 @@ def build_full_dashboard(
         const angle = (i / finalAnalogs.length) * 2 * Math.PI;
         const dist = 82 + (100 - sim) * 2.8;
 
-        // DESIGN.md Palette: Functional Emerald (#059669), Vibrant Teal (#0D9488), Energetic Amber (#D97706)
+        // Palette: Functional Emerald (#059669), Vibrant Teal (#0D9488), Energetic Amber (#D97706)
         let color = '#D97706';
         let edgeRgba = 'rgba(217, 119, 6, 0.45)';
         if (sim >= 90) {{
@@ -1978,7 +1977,7 @@ def build_full_dashboard(
           similarity: sim,
           color: color,
           edgeRgba: edgeRgba,
-          details: (an.pref_name || an.molecule_chembl_id) + ' (' + an.molecule_chembl_id + ') — ' + sim.toFixed(1) + '% Tanimoto similarity'
+          details: (an.pref_name || an.molecule_chembl_id) + ' (' + an.molecule_chembl_id + ') - ' + sim.toFixed(1) + '% Tanimoto similarity'
         }};
         nodes.push(nodeObj);
         links.push({{
@@ -2283,7 +2282,15 @@ def main() -> None:
   with open(args.output, "w", encoding="utf-8") as f:
     f.write(dashboard_html)
 
-  print(f"Generated standalone dashboard HTML at {args.output}")
+  ws_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+  try:
+    abs_out = os.path.abspath(args.output)
+    rel_out = os.path.relpath(abs_out, ws_root) if abs_out.startswith(ws_root) else args.output
+    if not rel_out.startswith((".", "/")):
+      rel_out = f"./{rel_out}"
+  except Exception:
+    rel_out = args.output
+  print(f"Generated standalone dashboard HTML at {rel_out}")
 
 
 if __name__ == "__main__":

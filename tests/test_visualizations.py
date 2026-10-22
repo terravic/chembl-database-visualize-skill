@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Unit and runtime verification tests for ChEMBL dashboard components and DESIGN.md compliance."""
+"""Unit and runtime verification tests for ChEMBL dashboard components."""
 
 from __future__ import annotations
 
@@ -114,7 +114,7 @@ class TestVisualizations(unittest.TestCase):
     self.assertIn("Normalized Descriptor Heatmap Matrix", html_out)
 
   def test_dashboard_compiler_design_and_controls(self):
-    """Verify interactive dashboard adheres to DESIGN.md rules, node map, theme toggle, and zoom controls."""
+    """Verify interactive dashboard color tokens, node map, theme toggle, and zoom controls."""
     root_dir = os.path.join(os.path.dirname(__file__), "..")
     with open(os.path.join(root_dir, "sample_data", "chembl25_aspirin.json"), "r", encoding="utf-8") as f:
       compound_data = json.load(f)
@@ -136,25 +136,25 @@ class TestVisualizations(unittest.TestCase):
         similarity_data=similarity_data,
     )
 
-    # Verify relationship node map elements & absence of 'Physics' in UI titles
+    # Verify relationship node map elements
     self.assertIn("physics-viewport", dashboard)
     self.assertIn("stepPhysics", dashboard)
     self.assertIn("Interactive Relationship Node Map", dashboard)
     self.assertNotIn("Physics Graph", dashboard)
     self.assertNotIn("Pause Physics", dashboard)
 
-    # Verify minimalist icon-only theme toggle
+    # Verify theme toggle
     self.assertIn("theme-toggle-btn", dashboard)
     self.assertIn("theme-light-label", dashboard)
     self.assertIn("theme-dark-label", dashboard)
     self.assertNotIn(">Light Mode<", dashboard)
     self.assertNotIn(">Dark Mode<", dashboard)
 
-    # Verify DESIGN.md Light & Dark theme color tokens
+    # Verify Light & Dark theme color tokens
     for token in ("#FAFAF9", "#FFFFFF", "#E7E5E4", "#1C1917", "#787774", "#0D0E11", "#16171D", "#292A30", "#ECE8E2", "#9A9895"):
       self.assertIn(token, dashboard)
 
-    # Verify DESIGN.md Data Visualization Color Palette
+    # Verify Data Visualization Color Palette
     for pal_color in ("#0D9488", "#D97706", "#4F46E5", "#059669", "#E11D48"):
       self.assertIn(pal_color, dashboard)
 

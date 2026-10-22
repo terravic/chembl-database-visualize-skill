@@ -15,8 +15,7 @@
 """SAR and bioactivity distribution visualizer component.
 
 Transforms normalized bioactivity records into interactive potency histograms,
-target affinity comparisons, and filterable monospace data tables strictly
-adhering to DESIGN.md guidelines.
+target affinity comparisons, and filterable monospace data tables.
 """
 
 from __future__ import annotations
@@ -130,7 +129,7 @@ def process_activities(raw_activities: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def generate_histogram_svg(pic50_values: list[float], width: int = 420, height: int = 230) -> str:
-  """Generate an SVG histogram of pIC50 values using the DESIGN.md palette."""
+  """Generate an SVG histogram of pIC50 values."""
   if not pic50_values:
     return f"""<svg viewBox="0 0 {width} {height}" width="100%" height="100%">
       <rect width="{width}" height="{height}" fill="transparent"/>
@@ -294,7 +293,7 @@ def render_bioactivity_card(activity_data: dict[str, Any]) -> str:
           <button type="button" id="hist-reset" onclick="resetView('hist')" class="btn-control" title="Reset View">Reset View</button>
         </div>
       </div>
-      <div id="hist-svg-container" class="viz-canvas-hist interactive-viewport" data-zoom-target="hist">
+      <div id="hist-svg-container" class="viz-viewport-hist interactive-viewport" data-zoom-target="hist">
         <div id="hist-stage" class="zoom-stage">
           {hist_svg}
         </div>
@@ -302,8 +301,8 @@ def render_bioactivity_card(activity_data: dict[str, Any]) -> str:
       <div class="viz-legend" style="padding: 8px 16px 12px; margin-top: 0;">
         <div class="viz-legend-inline">
           <span class="legend-item"><span class="legend-dot" style="background:#059669"></span>&ge;8.0</span>
-          <span class="legend-item"><span class="legend-dot" style="background:#0D9488"></span>7.0–7.9</span>
-          <span class="legend-item"><span class="legend-dot" style="background:#D97706"></span>5.0–6.9</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#0D9488"></span>7.0&ndash;7.9</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#D97706"></span>5.0&ndash;6.9</span>
           <span class="legend-item"><span class="legend-dot" style="background:#E11D48"></span>&lt;5.0</span>
         </div>
       </div>

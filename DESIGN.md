@@ -1,95 +1,79 @@
-# DESIGN.md - Dashboard Anti-Slop Directive
-# Target: All Coding Agents | Project: Canvas Dashboards
+# Dashboard Design Specification
 
-This document contains strict visual, structural, and platform-specific constraints for generating and refactoring HTML-based Canvas dashboards. Every UI change, dashboard creation, or refactoring task must adhere to these rules. Do not default to generic, cluttered LLM templates.
+## 1. Layout and Typography Architecture
 
----
+The interactive dashboard (`dashboard.html`) implements a structured, high-density visual layout designed for medicinal chemistry and bioactivity analysis.
 
-## 1. Zero AI Slop Ban List (The "Never-Do" Rules)
-You must proactively prune and ban these common LLM design hallucinations:
-
-| Banned Element | Why It is Banned | Approved Alternative |
-|---|---|---|
-| **Inter / Roboto Fonts** | Overused, makes dashboards look like generic templates. | Use characterful pairing (e.g., Geist Sans, DM Sans, or system-serif for headers). |
-| **Purple/Lavender Gradients** | The visual signature of low-effort AI UI. | Use flat, solid backgrounds. Use opacity or 1px borders for depth. |
-| **Card-in-Card Nesting** | Creates visual clutter, excessive padding, and wasted space. | Use flat bento-style grids with thin borderless dividers. |
-| **Useless Status Labels** | "Ready" or "Active" badges on every single element. | Only display status indicators when an item is in an error or critical state. |
-| **Decorative Gridlines** | Background wire-frame grids that serve no functional purpose. | Keep gridlines strictly for actual charting/graphing areas. |
-| **Decorative Icons** | Placing a generic icon next to every single metric card header. | Use plain text hierarchy. Icons must only represent actionable buttons. |
+| Design Dimension | Specification | Implementation Details |
+| :--- | :--- | :--- |
+| **Typography** | `DM Sans` and `IBM Plex Mono` | `DM Sans` is used for section headers, navigation, and labels. `IBM Plex Mono` is used for ChEMBL IDs, SMILES strings, InChIKeys, coordinates, and tabular assay values. |
+| **Surface Architecture** | Flat Solid Surfaces | Solid backgrounds with `1px solid` borders (`6px` to `8px` border radius). No decorative background gradients or drop shadows. |
+| **Container Hierarchy** | Flat Bento Grid | Sections are organized as flat Bento panels divided by `1px solid` hairlines without nested card-in-card containers. |
+| **Status Indicators** | Exception-Only Alerts | Status badges are rendered only when Lipinski Rule of 5 violations (`violations > 0`) or low-potency threshold alerts (`> 10 uM`) occur. |
+| **Chart Gridlines** | Data-Scoped Gridlines | Gridlines are restricted strictly to coordinate plotting areas (Lipinski radar axes and pIC50 histogram reference lines). |
+| **Header Hierarchy** | Text-Based Section Headers | Panel and subcell headers use plain typographic hierarchy without decorative icons next to titles. |
 
 ---
 
-## 2. Canvas Environment & Technical Constraints
-All dashboards must be built to run natively within the platform's Canvas environment.
+## 2. Runtime and Execution Specifications
 
-* **Native Sandbox Execution:** The Canvas platform renders UI inside a sandboxed iframe. All dashboards must be self-contained, using native HTML5, modern CSS, and vanilla JavaScript (or via reliable, CDN-delivered ES modules).
-* **Interactive Iteration:** UI elements must support dynamic rendering and iterative state updates. State should be managed seamlessly inside the client-side JS context.
-* **Testability (dashboard.html):** For local verification and immediate platform rendering, you must emit the standalone HTML file as a user-facing artifact named `dashboard.html`. When doing so, use write_to_file with:
-  `ArtifactMetadata: { UserFacing: true, Summary: "Interactive Evaluation Dashboard", RequestFeedback: false }`
-  This ensures the file immediately opens and renders directly in the agent harness preview pane.
-* **Production Data Only:** Never hardcode dummy or mock "lorem ipsum" data in the production rendering phase. The dashboard must process and render the actual, real-world data provided by the user session. Synthetic data is permitted only in the generated local test file.
+* **Self-Contained Delivery:** The compiled `dashboard.html` file embeds all CSS rules, SVG structures, 3D SDF coordinate blocks, serialized JSON payloads, and interactive JavaScript routines in a single standalone HTML5 document.
+* **Sandboxed Execution Compatibility:** Client-side state management wraps `window.localStorage` access in defensive `try/catch` blocks (`safeGetStorage` and `safeSetStorage`) so theme toggling and interactive controls operate reliably inside restricted iframe sandboxes.
+* **Interactive Viewport Controls:** Every visual diagram and chart viewport provides `Zoom In`, `Zoom Out`, and `Reset View` controls alongside mouse-wheel zooming and click-and-drag panning or rotation.
+* **Data Integrity:** All visual components bind directly to the processed ChEMBL compound, bioactivity, mechanism, indication, and similarity datasets embedded in `#dashboard-data` and `#sdf-data`.
 
 ---
 
 ## 3. Light and Dark Theme Specifications
-The dashboard must natively support both a clean light mode and a high-contrast, modern dark mode.
 
-* **Toggle Element:** The theme switcher must be a single, textless, minimalist button containing only an icon (e.g., a simple sun icon for light mode, moon icon for dark mode).
-* **Color Schemes:**
-  * **Light Mode:** 
-    * Background: #FAFAF9 (Warm off-white)
-    * Cards & Surfaces: #FFFFFF
-    * Borders: #E7E5E4 (1px solid, 6px to 8px border-radius)
-    * Text Primary: #1C1917
-    * Text Secondary: #787774
+The dashboard natively supports both light mode and high-contrast dark mode via CSS custom properties and the `html.dark` / `data-theme` root selector.
+
+* **Theme Switcher (`#theme-toggle-btn`):** A single minimalist button in the top application header that switches between light and dark palettes and dynamically updates all 2D/3D viewports and network graphs.
+* **Color Tokens:**
+  * **Light Mode:**
+    * Page Background (`--bg-page`): `#FAFAF9`
+    * Cards and Surfaces (`--bg-surface`): `#FFFFFF`
+    * Borders and Hairlines (`--border`): `#E7E5E4` (`1px solid`, `6px` to `8px` border-radius)
+    * Text Primary (`--text-primary`): `#1C1917`
+    * Text Secondary (`--text-secondary`): `#787774`
   * **Dark Mode:**
-    * Background: #0D0E11 (Deep charcoal, no pure pitch-black)
-    * Cards & Surfaces: #16171D
-    * Borders: #292A30 (1px solid, 6px to 8px border-radius)
-    * Text Primary: #ECE8E2
-    * Text Secondary: #9A9895
+    * Page Background (`--bg-page`): `#0D0E11`
+    * Cards and Surfaces (`--bg-surface`): `#16171D`
+    * Borders and Hairlines (`--border`): `#292A30` (`1px solid`, `6px` to `8px` border-radius)
+    * Text Primary (`--text-primary`): `#ECE8E2`
+    * Text Secondary (`--text-secondary`): `#9A9895`
 
 ---
 
-## 4. Modern Dashboard Layout & Element Rules
-All dashboards must balance high information density with modern, ultra-clean design patterns. Use simple, direct, and to-the-point titles for all UI components.
+## 4. Component Layout and Table Rules
 
-* **Text Displays:** Keep explanatory headers short and to the point. No conversational AI text blocks in the UI. Let the data speak for itself.
-* **Tables:** Tabular data must use monospaced fonts (e.g., Geist Mono or IBM Plex Mono) for clean, aligned reading. Use thin horizontal dividers instead of hard vertical borders.
-* **3D Visualization Constraints:**
-  * Only implement interactive 3D elements if they directly benefit the understanding of the underlying data.
-  * Do not use the word "Physics" anywhere in the visible UI text or component titles. Use clean titles like "Interactive Relationship Node Map" or "Structural Data Diagram."
-  * Keep any node/edge calculations clean and fast to prevent iframe performance lag.
+* **Direct Component Titles:** Component headers use concise, descriptive titles:
+  * `2D Chemical Structure`
+  * `Structural Data Diagram`
+  * `Physicochemical Profile (Lipinski Ro5)`
+  * `Interactive Relationship Node Map`
+  * `Clinical Development & Target Mechanisms`
+  * `Bioactivity & Potency Distribution`
+  * `Chemical Similarity & Descriptor Matrix`
+  * `Normalized Descriptor Heatmap Matrix`
+* **Monospace Data Tables:** All tabular views (mechanisms, clinical indications, bioactivity assays, and the descriptor heatmap matrix) use `IBM Plex Mono` for aligned numerical reading, with `1px solid` horizontal row dividers and no vertical cell borders.
+* **3D Structural Data Diagram:** Renders 3D atomic coordinates and bond orders from the embedded SDF block with interactive mouse rotation, `Zoom In`, `Zoom Out`, `Reset View`, `Auto-Spin`, and synchronized active button highlighting across `Sticks`, `Ball & Stick`, `Spheres`, and `Surface` representations.
 
 ---
 
-## 5. Dynamic Data Visualization & Color Palette
-While the dashboard container elements (cards, headers, background) must remain highly structured and minimalist, the data visualizations (charts, graphs, matrices, 3D molecular/network graphs) must be lively, vibrant, and highly legible. Do not render charts in grayscale. 
+## 5. Data Visualization Color Palette
 
-Use the following semantic and functional color palettes for data representation to make visualizations pop against light or dark backgrounds:
-
-### Data Visualization Color Palette
+All charts, molecular topologies, 3D conformers, network graphs, and heatmap matrices use a semantic 5-color visualization palette designed for high contrast against both light and dark surfaces:
 
 | Color Role | Hex Code | Visual Application |
-|---|---|---|
-| **Vibrant Teal** | #0D9488 | Primary data series, healthy nodes, structural bonds, baseline metrics. |
-| **Energetic Amber** | #D97706 | Secondary data series, warnings, dynamic connections, medium intensity. |
-| **Vivid Indigo** | #4F46E5 | Comparison series, distinct molecular groups, specialized network nodes. |
-| **Functional Emerald** | #059669 | Success metrics, active/positive data, stable system states. |
-| **Deep Rose** | #E11D48 | Negative trends, high-priority anomalies, critical cluster highlights. |
+| :--- | :--- | :--- |
+| **Vibrant Teal** | `#0D9488` | Primary data series, carbon skeleton bonds, compliant radar polygons, moderate potency bins (`pIC50 7.0-7.9`), and primary analog nodes (`85-89%` similarity). |
+| **Energetic Amber** | `#D97706` | Secondary data series, ester functional groups, moderate potency bins (`pIC50 5.0-6.9`), and moderate similarity analogs (`< 85%`). |
+| **Vivid Indigo** | `#4F46E5` | Query compound focal node in the relationship map, methyl group highlights, and molecular weight / lipophilicity heatmap scales. |
+| **Functional Emerald** | `#059669` | Lipinski Ro5 boundary polygon, high-potency assay bins (`pIC50 >= 8.0`), completed clinical phases, and high-similarity analogs (`>= 90%`). |
+| **Deep Rose** | `#E11D48` | Lipinski rule violation alerts, carbonyl/hydroxyl oxygen atoms, and low-potency assay bins (`pIC50 < 5.0` or `> 10 uM`). |
 
 ### Visualization Guidelines
-* **Matrices and Heatmaps:** Use a high-contrast gradient scale (e.g., from a soft, desaturated background color transitioning into a deep, saturated **Vivid Indigo** or **Vibrant Teal**) to make structural density and concentrations instantly visible.
-* **Network & Molecule Graphs:** Nodes should use distinct colors from the palette above to represent different categories or states. Connection lines (edges) should be semi-transparent versions of the node colors to draw clean paths without turning into a solid mass of lines.
-* **Sparsity & Contrast:** Keep chart background canvas transparent so they inherit the light or dark surface colors dynamically. Gridlines inside the charts should be faint (e.g., `#E7E5E4` in light mode, `#292A30` in dark mode) to ensure the colorful data elements remain the absolute focal point.
-
----
-
-## 6. Verification Checklist
-Before completing a task, verify the generated dashboard against this checklist:
-1. Does the dashboard output dynamically to a standalone `dashboard.html` artifact with correct metadata?
-2. Is the theme toggle a single, minimalist, textless icon button?
-3. Have all redundant ornamental UI elements, decorative gridlines, and purple-lavender gradients been stripped?
-4. Are the data visualizations (charts, graphs, matrices, 3D elements) colorful, lively, and highly readable, avoiding flat grayscales?
-5. Is the dashboard displaying the actual, processed user data rather than static fallback placeholders?
-
+* **Matrices and Heatmaps:** The `Normalized Descriptor Heatmap Matrix` applies a continuous opacity scale transitioning into saturated **Vibrant Teal** (`#0D9488`) and **Vivid Indigo** (`#4F46E5`) to represent normalized Tanimoto similarity, molecular weight, lipophilicity (`AlogP`), polar surface area (`TPSA`), and hydrogen-bond counts (`HBD / HBA`).
+* **Relationship Node Map and Molecular Graphs:** Nodes use distinct palette colors corresponding to similarity tiers, connected by semi-transparent edges (`rgba`) weighted by Tanimoto similarity.
+* **Surface Inheritance:** Chart viewports use transparent backgrounds so they inherit `--bg-surface` dynamically across theme transitions, with faint internal gridlines (`#E7E5E4` in light mode, `#292A30` in dark mode).
